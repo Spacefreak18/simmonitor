@@ -148,6 +148,14 @@ enum MHD_Result ahc_echo (void* cls, struct MHD_Connection* connection, const ch
                     free(txt1);
                     loop = TMPL_add_varlist(loop, vl);
                 }
+                if (simuiwidgets[j].uiwidgetsubtype == SIMUI_TEXTWIDGET_VELOCITY)
+                {
+                    char* txt1;
+                    asprintf(&txt1, "%i", sd->velocity);
+                    vl = TMPL_add_var(0, "datum", "velocity", "data", txt1, 0);
+                    free(txt1);
+                    loop = TMPL_add_varlist(loop, vl);
+                }
             }
             mylist = TMPL_add_loop(0, "myloop", loop);
 

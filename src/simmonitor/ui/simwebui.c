@@ -14,7 +14,7 @@
   "<html><head><title>simdash</title>" \
   "<script src=\"https://unpkg.com/htmx.org@2.0.1\" integrity=\"sha384-QWGpdj554B4ETpJJC9z+ZHJcA/i59TyjxEPXiiUgN2WmTyV5OEZWCD6gQhgkdpB/\" crossorigin=\"anonymous\"></script>" \
   "<link rel=\"stylesheet\" type=\"text/css\" href=\"simstyle.css\">" \
-  "</head><body><div id=\"maindash\" hx-get=\"/simdata\" hx-trigger=\"every 1s\"><p>searching for sim data</p>" \
+  "</head><body><div id=\"maindash\" hx-get=\"/simdata\" hx-trigger=\"every 50ms\"><p>searching for sim data</p>" \
   "</div></body></html>"
 
 SimData* sd;

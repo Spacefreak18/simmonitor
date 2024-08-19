@@ -1,0 +1,23 @@
+body {
+  background-color: #000000;
+}
+
+#rpm {
+    font-size: 50px;
+    color: yellow;
+    margin: auto;
+    width: 25%;
+    border: 3px solid green;
+    padding: 2px;
+    text-align: center;
+}
+
+#gear {
+    font-size: 150px;
+    color: yellow;
+    margin: auto;
+    width: 25%;
+    border: 3px solid green;
+    padding: 2px;
+    text-align: center;
+};

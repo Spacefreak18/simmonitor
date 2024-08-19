@@ -1,0 +1,8 @@
+/build
+/src/simmonitor/tags
+
+/src/simmonitor/simulatorapi/simapi
+/src/simmonitor/fbgfx
+/src/simmonitor/Nuklear
+/src/simmonitor/ctemplate
+/src/simmonitor/slog

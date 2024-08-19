@@ -33,6 +33,8 @@ cmake ..
 make
 ```
 
+Once compiled copy conf files to ~/.config/simmonitor and data files to ~/.local/share/simmonitor.
+
 ## DB Setup
 ```
 CREATE DATABASE simmonitor;

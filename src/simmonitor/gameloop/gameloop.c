@@ -80,6 +80,7 @@ void shmdatamapcallback(uv_timer_t* handle)
             FontInfo* fi = malloc(sizeof(FontInfo) * fonts);
             SimUIWidget* simuiwidgets = malloc(sizeof(SimUIWidget) * widgets);
 
+            asprintf(&f->templatefile, "%s%s", sms->datadir_str, "base.tmpl");
             uiloadconfig(sms->uiconfig_str, confignum, fi, simuiwidgets, "");
 
 
@@ -99,6 +100,7 @@ void shmdatamapcallback(uv_timer_t* handle)
         slogi("stopped mapping data, press q again to quit");
         stopdatalogger(sms, f);
         stopui(sms->ui_type, f);
+        // free loop data
         uv_timer_stop(handle);
         uv_timer_start(&datachecktimer, datacheckcallback, 3000, 1000);
     }

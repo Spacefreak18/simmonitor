@@ -20,6 +20,7 @@ typedef struct loop_data
     SimData* simdata;
     SimMap* simmap;
     SimUIWidget* simuiwidgets;
+    char* templatefile;
     struct fttinfo* ft;
     FontInfo* fi;
     char* css;

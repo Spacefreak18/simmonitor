@@ -21,6 +21,7 @@ SimData* sd;
 SimMap* sm;
 SimUIWidget* simuiwidgets;
 char* css;
+char* templatefile;
 int numwidgets;
 
 long slurp(char const* path, char** buf, bool add_nul)
@@ -155,7 +156,7 @@ enum MHD_Result ahc_echo (void* cls, struct MHD_Connection* connection, const ch
 
             stream = open_memstream (&html, &size);
 
-            TMPL_write("base.tmpl", 0, 0, mylist, stream, stderr);
+            TMPL_write(templatefile, 0, 0, mylist, stream, stderr);
 
             fflush(stream);
 
@@ -186,6 +187,8 @@ int webuistart(loop_data* l)
     css = l->css;
     simuiwidgets = l->simuiwidgets;
     numwidgets = l->numwidgets;
+    templatefile = l->templatefile;
+    slogd("Using template file %s", templatefile);
     return 0;
 }
 

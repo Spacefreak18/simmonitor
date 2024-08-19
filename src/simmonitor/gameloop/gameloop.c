@@ -94,7 +94,7 @@ void shmdatamapcallback(uv_timer_t* handle)
         }
     }
 
-    if (f->simstate == false || simdata->simstatus <= 1 || appstate == 1)
+    if (f->simstate == false || simdata->simstatus <= 1 || appstate <= 1)
     {
         f->uion = false;
         slogi("stopped mapping data, press q again to quit");
@@ -203,14 +203,6 @@ void startui(UIType ui, SMSettings* sms, loop_data* f)
 
 void cb(uv_poll_t* handle, int status, int events)
 {
-
-    void* b = uv_handle_get_data((uv_handle_t*) handle);
-    loop_data* f = (loop_data*) b;
-    SimData* simdata = f->simdata;
-    SimMap* simmap = f->simmap;
-
-    char* line = NULL;
-    size_t len = 0;
     char ch;
     scanf("%c", &ch);
     if (ch == 'q')
@@ -223,6 +215,10 @@ void cb(uv_poll_t* handle, int status, int events)
 
     if(appstate == 2)
     {
+        void* b = uv_handle_get_data((uv_handle_t*) handle);
+        loop_data* f = (loop_data*) b;
+        SimData* simdata = f->simdata;
+        SimMap* simmap = f->simmap;
         if(ch == 'c')
         {
             fprintf(stdout, "speed: %i rpms: %i gear: %i\n", simdata->velocity, simdata->rpms, simdata->gear);
@@ -235,13 +231,10 @@ void cb(uv_poll_t* handle, int status, int events)
         }
     }
 
-    if (appstate == 1)
-    {
-        f->uion = false;
-    }
     if (appstate == 0)
     {
         slogi("Sim Monitor is exiting...");
+        uv_timer_stop(&datachecktimer);
         uv_poll_stop(handle);
     }
 }

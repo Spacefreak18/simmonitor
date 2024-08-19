@@ -15,6 +15,20 @@ Customizable Simulator dashboards and telemetry data logger
 - argtable2
 - libconfig
 - ncurses
+- microhttpd
+- libxdg
+- uv
+- hoel
+- jansson
+- GL
+- GLU
+- GLEW
+- glfw
+- freetype
+-- the rest are git submodules
+- [Nuklear](https://github.com/Immediate-Mode-UI/Nuklear)
+- [fbgfx](https://github.com/spacefreak18/fbgfx)
+- [ctemplate](https://github.com/spacefreak18/ctemplate)
 - [slog](https://github.com/kala13x/slog)
 - [simshmbridge](https://github.com/spacefreak18/simshmbridge)
 - [simapi](https://github.com/spacefreak18/simapi)

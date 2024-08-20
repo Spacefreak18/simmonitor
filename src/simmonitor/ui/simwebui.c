@@ -156,6 +156,46 @@ enum MHD_Result ahc_echo (void* cls, struct MHD_Connection* connection, const ch
                     free(txt1);
                     loop = TMPL_add_varlist(loop, vl);
                 }
+                if (simuiwidgets[j].uiwidgetsubtype == SIMUI_TEXTWIDGET_LAP)
+                {
+                    char* txt1;
+                    asprintf(&txt1, "%i / %i", sd->lap, sd->numlaps);
+                    vl = TMPL_add_var(0, "datum", "lap", "data", txt1, 0);
+                    free(txt1);
+                    loop = TMPL_add_varlist(loop, vl);
+                }
+                if (simuiwidgets[j].uiwidgetsubtype == SIMUI_TEXTWIDGET_POSITION)
+                {
+                    char* txt1;
+                    asprintf(&txt1, "%i / %i", sd->position, sd->numcars);
+                    vl = TMPL_add_var(0, "datum", "position", "data", txt1, 0);
+                    free(txt1);
+                    loop = TMPL_add_varlist(loop, vl);
+                }
+                if (simuiwidgets[j].uiwidgetsubtype == SIMUI_TEXTWIDGET_FUELREMAINING)
+                {
+                    char* txt1;
+                    asprintf(&txt1, "%f", sd->fuel);
+                    vl = TMPL_add_var(0, "datum", "fuel", "data", txt1, 0);
+                    free(txt1);
+                    loop = TMPL_add_varlist(loop, vl);
+                }
+                if (simuiwidgets[j].uiwidgetsubtype == SIMUI_TEXTWIDGET_LASTLAP)
+                {
+                    char* txt1;
+                    asprintf(&txt1, "%d:%02d:%03d\n", sd->lastlap.minutes, sd->lastlap.seconds, sd->lastlap.fraction);
+                    vl = TMPL_add_var(0, "datum", "lastlap", "data", txt1, 0);
+                    free(txt1);
+                    loop = TMPL_add_varlist(loop, vl);
+                }
+                if (simuiwidgets[j].uiwidgetsubtype == SIMUI_TEXTWIDGET_BESTLAP)
+                {
+                    char* txt1;
+                    asprintf(&txt1, "%d:%02d:%03d\n", sd->bestlap.minutes, sd->bestlap.seconds, sd->bestlap.fraction);
+                    vl = TMPL_add_var(0, "datum", "bestlap", "data", txt1, 0);
+                    free(txt1);
+                    loop = TMPL_add_varlist(loop, vl);
+                }
             }
             mylist = TMPL_add_loop(0, "myloop", loop);
 

@@ -103,6 +103,12 @@ int getsubtype(char const* a)
         return SIMUI_TEXTWIDGET_VELOCITY;
     }
 
+    r = strcicmp("pos_standalone", a);
+    if (r == 0)
+    {
+        return SIMUI_TEXTWIDGET_POSITION_STANDALONE;
+    }
+
     r = strcicmp("pos", a);
     if (r == 0)
     {
@@ -113,6 +119,12 @@ int getsubtype(char const* a)
     if (r == 0)
     {
         return SIMUI_TEXTWIDGET_NUMCARS;
+    }
+
+    r = strcicmp("lap_standalone", a);
+    if (r == 0)
+    {
+        return SIMUI_TEXTWIDGET_LAP_STANDALONE;
     }
 
     r = strcicmp("lap", a);

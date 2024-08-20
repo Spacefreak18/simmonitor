@@ -62,18 +62,20 @@ SimUIWidgetType;
 
 typedef enum
 {
-    SIMUI_TEXTWIDGET_STATICTEXT      = 0,
-    SIMUI_TEXTWIDGET_RPMS            = 1,
-    SIMUI_TEXTWIDGET_GEAR            = 2,
-    SIMUI_TEXTWIDGET_LAP             = 3,
-    SIMUI_TEXTWIDGET_LAPS            = 4,
-    SIMUI_TEXTWIDGET_POSITION        = 5,
-    SIMUI_TEXTWIDGET_NUMCARS         = 6,
-    SIMUI_TEXTWIDGET_BESTLAP         = 7,
-    SIMUI_TEXTWIDGET_LASTLAP         = 8,
-    SIMUI_TEXTWIDGET_BRAKEBIAS       = 9,
-    SIMUI_TEXTWIDGET_FUELREMAINING   = 10,
-    SIMUI_TEXTWIDGET_VELOCITY        = 11,
+    SIMUI_TEXTWIDGET_STATICTEXT                 = 0,
+    SIMUI_TEXTWIDGET_RPMS                       = 1,
+    SIMUI_TEXTWIDGET_GEAR                       = 2,
+    SIMUI_TEXTWIDGET_LAP                        = 3,
+    SIMUI_TEXTWIDGET_LAPS                       = 4,
+    SIMUI_TEXTWIDGET_POSITION                   = 5,
+    SIMUI_TEXTWIDGET_NUMCARS                    = 6,
+    SIMUI_TEXTWIDGET_BESTLAP                    = 7,
+    SIMUI_TEXTWIDGET_LASTLAP                    = 8,
+    SIMUI_TEXTWIDGET_BRAKEBIAS                  = 9,
+    SIMUI_TEXTWIDGET_FUELREMAINING              = 10,
+    SIMUI_TEXTWIDGET_VELOCITY                   = 11,
+    SIMUI_TEXTWIDGET_POSITION_STANDALONE        = 12,
+    SIMUI_TEXTWIDGET_LAP_STANDALONE             = 13,
 }
 SimUIWidgetSubType;
 

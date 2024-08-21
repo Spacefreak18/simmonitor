@@ -124,7 +124,7 @@ void datacheckcallback(uv_timer_t* handle)
         {
             appstate++;
             doui = true;
-            uv_timer_start(&datamaptimer, shmdatamapcallback, 2000, 1000);
+            uv_timer_start(&datamaptimer, shmdatamapcallback, 2000, 16);
             uv_timer_stop(handle);
         }
     }

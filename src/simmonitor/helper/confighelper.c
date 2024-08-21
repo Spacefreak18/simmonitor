@@ -145,6 +145,12 @@ int getsubtype(char const* a)
         return SIMUI_TEXTWIDGET_BESTLAP;
     }
 
+    r = strcicmp("currentlap", a);
+    if (r == 0)
+    {
+        return SIMUI_TEXTWIDGET_CURRENTLAP;
+    }
+
     r = strcicmp("brakebias", a);
     if (r == 0)
     {

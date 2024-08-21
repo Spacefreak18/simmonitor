@@ -196,6 +196,14 @@ enum MHD_Result ahc_echo (void* cls, struct MHD_Connection* connection, const ch
                     free(txt1);
                     loop = TMPL_add_varlist(loop, vl);
                 }
+                if (simuiwidgets[j].uiwidgetsubtype == SIMUI_TEXTWIDGET_CURRENTLAP)
+                {
+                    char* txt1;
+                    asprintf(&txt1, "%d:%02d:%03d\n", sd->currentlap.minutes, sd->currentlap.seconds, sd->currentlap.fraction);
+                    vl = TMPL_add_var(0, "datum", "currentlap", "data", txt1, 0);
+                    free(txt1);
+                    loop = TMPL_add_varlist(loop, vl);
+                }
             }
             mylist = TMPL_add_loop(0, "myloop", loop);
 

@@ -76,6 +76,7 @@ typedef enum
     SIMUI_TEXTWIDGET_VELOCITY                   = 11,
     SIMUI_TEXTWIDGET_POSITION_STANDALONE        = 12,
     SIMUI_TEXTWIDGET_LAP_STANDALONE             = 13,
+    SIMUI_TEXTWIDGET_CURRENTLAP                 = 14,
 }
 SimUIWidgetSubType;
 

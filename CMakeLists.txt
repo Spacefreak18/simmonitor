@@ -16,7 +16,7 @@ project(simmonitor)
 set(CMAKE_EXE_LINKER_FLAGS "-Wl,--no-as-needed -ldl")
 set(FREETYPE_INCLUDE_DIR /usr/include/freetype2)
 
-find_package(eclipse-paho-mqtt-c REQUIRED)
+#find_package(eclipse-paho-mqtt-c REQUIRED)
 
 add_subdirectory(src/simmonitor/gameloop)
 add_subdirectory(src/simmonitor/simulatorapi)

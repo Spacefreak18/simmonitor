@@ -81,7 +81,7 @@ void shmdatamapcallback(uv_timer_t* handle)
             SimUIWidget* simuiwidgets = malloc(sizeof(SimUIWidget) * widgets);
 
             asprintf(&f->templatefile, "%s%s", sms->datadir_str, "base.tmpl");
-            uiloadconfig(sms->uiconfig_str, confignum, fi, simuiwidgets, "");
+            uiloadconfig(sms->uiconfig_str, confignum, fi, simuiwidgets, "/usr/share/fonts/TTF");
 
 
             f->simuiwidgets = simuiwidgets;

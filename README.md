@@ -107,5 +107,8 @@ So far this is only tested with Assetto Corsa. For best results, it requires the
     valgrind -v --leak-check=full --show-leak-kinds=all --suppressions=../.valgrindrc ./simmonitor play
 ```
 
+## Join the Discussion
+[Sim Racing Matrix Space](https://matrix.to/#/#simracing:matrix.org)
+
 ## ToDo
  - much, much more

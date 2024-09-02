@@ -16,6 +16,7 @@ typedef struct loop_data
     int numwidgets;
     bool simstate;
     bool uion;
+    bool releasing;
     SMSettings* sms;
     SimData* simdata;
     SimMap* simmap;

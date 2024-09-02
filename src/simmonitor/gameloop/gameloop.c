@@ -96,13 +96,26 @@ void shmdatamapcallback(uv_timer_t* handle)
 
     if (f->simstate == false || simdata->simstatus <= 1 || appstate <= 1)
     {
-        f->uion = false;
-        slogi("stopped mapping data, press q again to quit");
-        stopdatalogger(sms, f);
-        stopui(sms->ui_type, f);
-        // free loop data
-        uv_timer_stop(handle);
-        uv_timer_start(&datachecktimer, datacheckcallback, 3000, 1000);
+        if(f->releasing == false)
+        {
+            f->releasing = true;
+            f->uion = false;
+            slogi("stopped mapping data, press q again to quit");
+            stopdatalogger(sms, f);
+            stopui(sms->ui_type, f);
+            // free loop data
+            uv_timer_stop(handle);
+
+            if(appstate > 0)
+            {
+                uv_timer_start(&datachecktimer, datacheckcallback, 3000, 1000);
+            }
+            f->releasing = false;
+            if(appstate > 1)
+            {
+                appstate = 1;
+            }
+        }
     }
 }
 
@@ -118,7 +131,7 @@ void datacheckcallback(uv_timer_t* handle)
     {
         getSim(simdata, simmap, &f->simstate, &f->sim);
     }
-    if (f->simstate == true)
+    if (f->simstate == true && simdata->simstatus >= 2)
     {
         if ( appstate == 1 )
         {
@@ -203,14 +216,19 @@ void startui(UIType ui, SMSettings* sms, loop_data* f)
 
 void cb(uv_poll_t* handle, int status, int events)
 {
+    void* b = uv_handle_get_data((uv_handle_t*) handle);
+    loop_data* f = (loop_data*) b;
     char ch;
     scanf("%c", &ch);
     if (ch == 'q')
     {
-        appstate--;
-        slogi("User requested stop appstate is now %i", appstate);
-        fprintf(stdout, "User requested stop appstate is now %i\n", appstate);
-        fflush(stdout);
+        if(f->releasing == false && doui == false)
+        {
+            appstate--;
+            slogi("User requested stop appstate is now %i", appstate);
+            fprintf(stdout, "User requested stop appstate is now %i\n", appstate);
+            fflush(stdout);
+        }
     }
 
     if(appstate == 2)
@@ -266,6 +284,7 @@ int mainloop(SMSettings* sms)
     baton->simstate = false;
     baton->uion = false;
     baton->sim = 0;
+    baton->releasing = false;
     baton->req.data = (void*) baton;
     uv_handle_set_data((uv_handle_t*) &datachecktimer, (void*) baton);
     uv_handle_set_data((uv_handle_t*) &datamaptimer, (void*) baton);
@@ -309,6 +328,7 @@ int mainloop(SMSettings* sms)
     fflush(stdout);
     tcsetattr(0, TCSANOW, &canonicalmode);
 
+    free(baton);
     free(simdata);
     free(simmap);
 

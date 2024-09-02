@@ -8,5 +8,3 @@ set(telemetry_source_files
 )
 
 add_library(telemetry STATIC ${telemetry_source_files})
-
-target_compile_definitions(telemetry PRIVATE SIMMAP_ALL)

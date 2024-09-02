@@ -7,5 +7,3 @@ set(gameloop_source_files
 )
 
 add_library(gameloop STATIC ${gameloop_source_files})
-
-target_compile_definitions(gameloop PRIVATE SIMMAP_ALL)

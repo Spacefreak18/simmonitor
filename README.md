@@ -11,6 +11,17 @@ Customizable Simulator dashboards and telemetry data logger
 
 [![gilles1.png](https://i.postimg.cc/JhgrQB8c/gilles1.png)](https://postimg.cc/ns4fFrCC)
 
+## Suported Games
+  - Using [SimSHMBridge](https://github.com/spacefreak18/simshmbridge)
+    - Asseto Corsa
+    - Assetto Corsa Competizione
+    - Project Cars 2
+    - Automobilista 2
+  
+  - Using [scs-sdk-plugin](https://github.com/jackz314/scs-sdk-plugin/releases)
+    - Euro Truck Simuator 2
+    - American Truck Simulator
+
 ## Dependencies
 - argtable2
 - libconfig

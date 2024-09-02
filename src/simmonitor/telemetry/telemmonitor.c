@@ -256,18 +256,20 @@ void telemetrycallback(uv_timer_t* handle)
 
     if (f->uion == false)
     {
-        slogd("telemetry stop signal");
-        int telemid = addtelemetry(conn, track_samples, stintlapid);
-        int b = updatetelemetrydata(conn, track_samples, telemid, stintlapid, speeddata, rpmdata, geardata, steerdata, acceldata, brakedata);
-        closelap(conn, stintlapid, sectortimes[1], sectortimes[2], SimData->lastsectorinms, 0, 0, 0, 0, SimData);
-        closestint(conn, stintid, stintlaps, validstintlaps);
-        closesession(conn, sessionid);
         uv_timer_stop(handle);
     }
 }
 
 void telemetrystop(SimData* SimData)
 {
+
+    slogd("telemetry stop signal");
+    int telemid = addtelemetry(conn, track_samples, stintlapid);
+    int b = updatetelemetrydata(conn, track_samples, telemid, stintlapid, speeddata, rpmdata, geardata, steerdata, acceldata, brakedata);
+    closelap(conn, stintlapid, sectortimes[1], sectortimes[2], SimData->lastsectorinms, 0, 0, 0, 0, SimData);
+    closestint(conn, stintid, stintlaps, validstintlaps);
+    closesession(conn, sessionid);
+
     h_close_db(conn);
     h_clean_connection(conn);
 

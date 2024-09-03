@@ -143,9 +143,8 @@ enum MHD_Result ahc_echo (void* cls, struct MHD_Connection* connection, const ch
                 if (simuiwidgets[j].uiwidgetsubtype == SIMUI_TEXTWIDGET_GEAR)
                 {
                     char* txt1;
-                    asprintf(&txt1, "%c", sd->gearc);
+                    txt1 = sd->gearc;
                     vl = TMPL_add_var(0, "datum", "gear", "data", txt1, 0);
-                    free(txt1);
                     loop = TMPL_add_varlist(loop, vl);
                 }
                 if (simuiwidgets[j].uiwidgetsubtype == SIMUI_TEXTWIDGET_VELOCITY)

@@ -74,10 +74,10 @@ void fbcallback(uv_timer_t* handle)
 
     gfx_clear(pixels, pixels_len);
 
-    char gear[2];
-    gear[0] = simdata->gearc;
-    gear[1] = '\0';
-    UTF32 gear2[2] = {gear[0], 0};
+    //char gear[2];
+    //gear[0] = simdata->gearc[0];
+    //gear[1] = '\0';
+    //UTF32 gear2[2] = {gear[0], 0};
 
     char numlaps[4];
     char numcars[4];
@@ -116,7 +116,9 @@ void fbcallback(uv_timer_t* handle)
         bool draw = false;
         if (simuiwidgets[j].uiwidgetsubtype == SIMUI_TEXTWIDGET_GEAR)
         {
-            tempstr = gear;
+            tempstr = simdata->gearc;
+            //asprintf(&tempstr, "%s", gear);
+            //tempstr = gear;
             draw = true;
         }
         if (simuiwidgets[j].uiwidgetsubtype == SIMUI_TEXTWIDGET_RPMS)

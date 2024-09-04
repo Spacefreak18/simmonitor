@@ -208,12 +208,27 @@ void startui(UIType ui, SMSettings* sms, loop_data* f)
             break;
         case (SIMMONITOR_WEB):
 
-            FILE* fb = fopen(sms->css_file_str, "rb");
-            f->css = fslurp(fb);
+            FILE* fb = fopen(sms->css_file_str, "r");
+            if (fb == NULL)
+            {
+                perror("Failed: ");
+            }
+            else
+            {
+                f->css = fslurp(fb);
+            }
             fclose(fb);
 
-            FILE* fc = fopen("/home/paul/.local/share/simmonitor/simscript.js", "rb");
-            f->js = fslurp(fc);
+            char* jsfilepath;
+            asprintf(&jsfilepath, "%s%s", sms->datadir_str, "simscript.js");
+            FILE* fc = fopen("/home/paul/.local/share/simmonitor/simscript.js", "r");
+            if (fc == NULL) {
+                perror("Failed: ");
+            }
+            else
+            {
+                f->js = fslurp(fc);
+            }
             fclose(fc);
 
             asprintf(&f->templatefile, "%s%s", sms->datadir_str, "base.tmpl");

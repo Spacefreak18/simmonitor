@@ -221,7 +221,7 @@ void startui(UIType ui, SMSettings* sms, loop_data* f)
 
             char* jsfilepath;
             asprintf(&jsfilepath, "%s%s", sms->datadir_str, "simscript.js");
-            FILE* fc = fopen("/home/paul/.local/share/simmonitor/simscript.js", "r");
+            FILE* fc = fopen(jsfilepath, "r");
             if (fc == NULL) {
                 perror("Failed: ");
             }
@@ -230,6 +230,7 @@ void startui(UIType ui, SMSettings* sms, loop_data* f)
                 f->js = fslurp(fc);
             }
             fclose(fc);
+            free(jsfilepath);
 
             asprintf(&f->templatefile, "%s%s", sms->datadir_str, "base.tmpl");
             webuistart(f);

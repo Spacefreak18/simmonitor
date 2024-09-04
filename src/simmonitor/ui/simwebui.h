@@ -15,6 +15,6 @@ enum MHD_Result ahc_echo (void* cls, struct MHD_Connection* connection, const ch
                           const char* method, const char* version, const char* upload_data, size_t* upload_data_size,
                           void** req_cls);
 
-long slurp(char const* path, char** buf, bool add_nul);
+char *fslurp(FILE *fp);
 
 int webuistop(struct MHD_Daemon* d);

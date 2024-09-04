@@ -80,7 +80,7 @@ void shmdatamapcallback(uv_timer_t* handle)
             FontInfo* fi = malloc(sizeof(FontInfo) * fonts);
             SimUIWidget* simuiwidgets = malloc(sizeof(SimUIWidget) * widgets);
 
-            asprintf(&f->templatefile, "%s%s", sms->datadir_str, "base.tmpl");
+
             uiloadconfig(sms->uiconfig_str, confignum, fi, simuiwidgets, "/usr/share/fonts/TTF");
 
 
@@ -161,6 +161,8 @@ void stopui(UIType ui, loop_data* f)
         case (SIMMONITOR_WEB):
             webuistop(d);
             free(f->css);
+            free(f->js);
+            free(f->templatefile);
             break;
     }
 }
@@ -205,7 +207,16 @@ void startui(UIType ui, SMSettings* sms, loop_data* f)
             uv_timer_start(&fbtimer, fbcallback, 0, 16);
             break;
         case (SIMMONITOR_WEB):
-            slurp(sms->css_file_str, &f->css, true);
+
+            FILE* fb = fopen(sms->css_file_str, "rb");
+            f->css = fslurp(fb);
+            fclose(fb);
+
+            FILE* fc = fopen("/home/paul/.local/share/simmonitor/simscript.js", "rb");
+            f->js = fslurp(fc);
+            fclose(fc);
+
+            asprintf(&f->templatefile, "%s%s", sms->datadir_str, "base.tmpl");
             webuistart(f);
             slogi("starting microhttpd daemon on port 2300...");
             d = MHD_start_daemon (MHD_USE_AUTO | MHD_USE_INTERNAL_POLLING_THREAD | MHD_USE_ERROR_LOG,

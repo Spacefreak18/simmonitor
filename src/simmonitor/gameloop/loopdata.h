@@ -25,6 +25,7 @@ typedef struct loop_data
     struct fttinfo* ft;
     FontInfo* fi;
     char* css;
+    char* js;
 } loop_data;
 
 #endif

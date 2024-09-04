@@ -33,7 +33,7 @@ function updateFlag(flagstatus) {
   }
 }
 
-
+// this function must exist it is called each frame update, run all other functions from here
 function simScript() {
 
   flag = parseInt(document.getElementById("flag").innerHTML);

@@ -29,7 +29,7 @@ add_subdirectory(src/simmonitor/telemetry)
 
 add_executable(simmonitor src/simmonitor/simmonitor.c)
 target_include_directories(simmonitor PUBLIC config ${FREETYPE_INCLUDE_DIR})
-target_link_libraries(simmonitor xdg-basedir m ncursesw argtable2 config gameloop helper slog simulatorapi db ui telemetry uv hoel jansson GL GLU GLEW glfw fbgfx freetype microhttpd)
+target_link_libraries(simmonitor xdg-basedir m ncursesw argtable2 config gameloop helper slog simulatorapi db ui telemetry uv hoel jansson GL GLU GLEW glfw fbgfx freetype microhttpd tar)
 add_compile_definitions(simmonitor SIMMAP_ALL)
 
 # used for enabling additional compiler options if supported

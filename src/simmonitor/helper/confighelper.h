@@ -28,6 +28,7 @@ typedef struct
     char* dbconfig_str;
     char* css_file_str;
     char* datadir_str;
+    char* web_def_file;
     char* log_filename_str;
     char* log_dirname_str;
     char* gnuplot_file_str;
@@ -100,6 +101,6 @@ int freesettings(SMSettings* sms);
 int getuiconfigtouse(const char* config_file_str, char* car, int sim);
 int strcicmp(char const* a, char const* b);
 int uiconfigcheck(const char* config_file_str, int confignum, int* fonts, int* widgets);
-int uiloadconfig(const char* config_file_str, int confignum, FontInfo* fi, SimUIWidget* simuiwidgets, const char* fontpath);
+int uiloadconfig(const char* config_file_str, int confignum, FontInfo* fi, SimUIWidget* simuiwidgets, const char* fontpath, SMSettings* sms);
 int loaddbconfig(const char* config_file_str, SMSettings* p);
 #endif

@@ -28,6 +28,7 @@
 #include "../helper/parameters.h"
 #include "../helper/confighelper.h"
 #include "../helper/dirhelper.h"
+#include "../helper/iohelper.h"
 #include "../simulatorapi/simapi/simapi/simdata.h"
 #include "../simulatorapi/simapi/simapi/simmapper.h"
 #include "../slog/src/slog.h"
@@ -81,9 +82,7 @@ void shmdatamapcallback(uv_timer_t* handle)
             SimUIWidget* simuiwidgets = malloc(sizeof(SimUIWidget) * widgets);
 
 
-            uiloadconfig(sms->uiconfig_str, confignum, fi, simuiwidgets, "/usr/share/fonts/TTF");
-
-
+            uiloadconfig(sms->uiconfig_str, confignum, fi, simuiwidgets, "/usr/share/fonts/TTF", sms);
             f->simuiwidgets = simuiwidgets;
             f->fi = fi;
             doui = false;
@@ -208,7 +207,20 @@ void startui(UIType ui, SMSettings* sms, loop_data* f)
             break;
         case (SIMMONITOR_WEB):
 
-            FILE* fb = fopen(sms->css_file_str, "r");
+            if(sms->web_def_file == NULL)
+            {
+                sloge("No web definition file, could not start web server ui");
+                break;
+            }
+
+            char* rundir = NULL;
+            asprintf(&rundir, "%s%s/", sms->datadir_str, "run");
+            create_dir(rundir);
+            slogi("Using rundir %s extracting tarball %s", rundir, sms->web_def_file);
+            extract_tarball(sms->web_def_file, rundir);
+            char* cssfilepath;
+            asprintf(&cssfilepath, "%s%s", rundir, "simstyle.css");
+            FILE* fb = fopen(cssfilepath, "r");
             if (fb == NULL)
             {
                 perror("Failed: ");
@@ -220,7 +232,7 @@ void startui(UIType ui, SMSettings* sms, loop_data* f)
             fclose(fb);
 
             char* jsfilepath;
-            asprintf(&jsfilepath, "%s%s", sms->datadir_str, "simscript.js");
+            asprintf(&jsfilepath, "%s%s", rundir, "simscript.js");
             FILE* fc = fopen(jsfilepath, "r");
             if (fc == NULL) {
                 perror("Failed: ");
@@ -232,7 +244,7 @@ void startui(UIType ui, SMSettings* sms, loop_data* f)
             fclose(fc);
             free(jsfilepath);
 
-            asprintf(&f->templatefile, "%s%s", sms->datadir_str, "base.tmpl");
+            asprintf(&f->templatefile, "%s%s", rundir, "base.tmpl");
             webuistart(f);
             slogi("starting microhttpd daemon on port 2300...");
             d = MHD_start_daemon (MHD_USE_AUTO | MHD_USE_INTERNAL_POLLING_THREAD | MHD_USE_ERROR_LOG,

@@ -346,7 +346,7 @@ int uiconfigcheck(const char* config_file_str, int confignum, int* fonts, int* w
     //return cfg;
 }
 
-int uiloadconfig(const char* config_file_str, int confignum, FontInfo* fi, SimUIWidget* simuiwidgets, const char* fontpath)
+int uiloadconfig(const char* config_file_str, int confignum, FontInfo* fi, SimUIWidget* simuiwidgets, const char* fontpath, SMSettings* sms)
 {
     config_t cfg;
     config_init(&cfg);
@@ -357,8 +357,6 @@ int uiloadconfig(const char* config_file_str, int confignum, FontInfo* fi, SimUI
     else
     {
         slogi("Parsing config file");
-
-
 
         config_setting_t* config = NULL;
         config = config_lookup(&cfg, "configs");
@@ -388,12 +386,20 @@ int uiloadconfig(const char* config_file_str, int confignum, FontInfo* fi, SimUI
             free(temp2);
         }
 
+        int found = config_setting_lookup_string(selectedconfig, "webdeffile", &temp);
+        if( found > 0 )
+        {
+            sms->web_def_file = strdup(temp);
+            slogt("found web definition file %s", sms->web_def_file);
+        }
+
         config_setting_t* config_widget = NULL;
         config_setting_t* config_widgets = NULL;
         config_widgets = config_setting_lookup(selectedconfig, "widgets_array");
         int widgetslen = config_setting_length(config_widgets);
         slogd("will attempt to read %i widgets", widgetslen);
         //sms->widgets_length = widgetslen;
+
 
         for (int j = 0; j < widgetslen; j++)
         {
@@ -420,8 +426,6 @@ int uiloadconfig(const char* config_file_str, int confignum, FontInfo* fi, SimUI
         }
 
     }
-
-
     config_destroy(&cfg);
 
     return 0;

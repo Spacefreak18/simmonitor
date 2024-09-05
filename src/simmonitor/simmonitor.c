@@ -47,7 +47,7 @@ void SetSettingsFromParameters(Parameters* p, SMSettings* sms, char* configdir_s
         }
     }
 
-    if(p->user_specified_uiconfig_file == true && does_file_exist(p->db_config_filepath))
+    if(p->user_specified_uiconfig_file == true && does_file_exist(p->ui_config_filepath))
     {
         sms->uiconfig_str = strdup(p->ui_config_filepath);
     }

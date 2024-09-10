@@ -39,6 +39,7 @@ typedef struct
     bool  mysql;
     int dberr;
 
+    int db_type;
     char* db_user;
     char* db_serv;
     char* db_dbnm;

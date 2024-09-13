@@ -54,6 +54,7 @@ int telem_result(struct _h_result result, int doublefields, int intfields, int* 
                 case HOEL_COL_TYPE_BLOB:
                     int offset2 = 0;
 
+
                     int j = 0;
                     i = 0;
                     if (col < 5)
@@ -89,7 +90,7 @@ int telem_result(struct _h_result result, int doublefields, int intfields, int* 
                         while (i<((struct _h_type_blob*)result.data[row][col].t_data)->length)
                         {
                             int k = 0;
-                            char sss[18];
+                            char sss[19];
                             sss[0] = '0';
                             sss[1] = 'x';
                             sss[2] = *((char*)((struct _h_type_blob*)result.data[row][col].t_data)->value+offset2+0+k);
@@ -108,12 +109,13 @@ int telem_result(struct _h_result result, int doublefields, int intfields, int* 
                             sss[7+8] = *((char*)((struct _h_type_blob*)result.data[row][col].t_data)->value+offset2+5+8+k);
                             sss[8+8] = *((char*)((struct _h_type_blob*)result.data[row][col].t_data)->value+offset2+6+8+k);
                             sss[9+8] = *((char*)((struct _h_type_blob*)result.data[row][col].t_data)->value+offset2+7+8+k);
+                            sss[18] = 0;
                             //long val;
                             //slogt("%s",sss);
-                            int64_t number = (int64_t) strtoll(sss, NULL, 16);
-                            //int64_t swapped = __bswap_64(number);
-                            //double d = *((double*)&swapped);
-                            doublearrays[j+doublearrayoffset] = (double) number;
+                            unsigned long long number;
+                            number = strtoull(sss, NULL, 16);
+                            double d = *((double*)&number);
+                            doublearrays[j+doublearrayoffset] = (double) d;
                             offset2 = offset2 + 16;
                             i+=16;
                             j++;
@@ -304,7 +306,7 @@ int updatetelemetry(struct _h_connection* conn, int telemid, int samples, size_t
     char* query;
     //char* query = malloc((sizeof(char)*71)+(sizeof(column))+(size*2)+1);
     //sprintf(query, "UPDATE telemetry SET %s = decode('%s', 'hex') WHERE telemetry_id = %i", column, &output, telemid);
-    asprintf(&query, "UPDATE telemetry SET %s = unhex(%s) WHERE telemetry_id = %i", column, &output, telemid);
+    asprintf(&query, "UPDATE telemetry SET %s = unhex('%s') WHERE telemetry_id = %i", column, &output, telemid);
     slogt("query: %s", query);
     int res1 = h_query_update(conn, query);
     //int res1 = h_insert(conn, j_query, NULL);

@@ -265,7 +265,7 @@ int loadconnectionconfig(config_t* cfg, SMSettings* sms)
     {
         sms->db_type = HOEL_DB_TYPE_SQLITE;
         slogt("config file defines a sqlite database");
-        config_setting_lookup_string(config_db, "server", &temp);
+        config_setting_lookup_string(config_db, "database", &temp);
         sms->db_serv = strdup(temp);
         sms->db_conn = strdup(temp);
     }

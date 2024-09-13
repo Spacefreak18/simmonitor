@@ -76,14 +76,14 @@ int getsessions(struct _h_connection* conn, const char* sessionname, SessionDbo*
 {
     struct _h_result result;
     struct _h_data* data;
-    char* query = malloc(515 * sizeof(char));
+    char* query;
     slogt("Performing query sessions");
 
-    sprintf(query, "select sessions.session_id, events.event_id, sessions.event_type, table1.stints, track_config.display_name, cars.car_name, start_time "
+    asprintf(&query, "select sessions.session_id, events.event_id, sessions.event_type, table1.stints, track_config.display_name, cars.car_name, start_time "
             "FROM %s JOIN events ON sessions.event_id=events.event_id JOIN track_config ON events.track_config_id=track_config.track_config_id "
             "JOIN cars ON sessions.car_id=cars.car_id "
             "JOIN (Select session_id, COUNT(stint_id) AS stints FROM stints GROUP BY session_id) AS table1 ON table1.session_id=sessions.session_id "
-            "ORDER BY session_id DESC LIMIT 25", "Sessions");
+            "ORDER BY sessions.session_id DESC LIMIT 25", "Sessions");
 
     int errcode = h_query_select(conn, query, &result);
     if (errcode == H_OK)

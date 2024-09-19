@@ -11,7 +11,7 @@
 DROP TABLE IF EXISTS track_config ;
 
 CREATE TABLE IF NOT EXISTS track_config (
-  track_config_id BIGSERIAL PRIMARY KEY,
+  track_config_id INTEGER PRIMARY KEY,
   track_name VARCHAR(150) NULL,
   config_name VARCHAR(150) NULL,
   display_name VARCHAR(150) NULL,
@@ -26,7 +26,7 @@ CREATE TABLE IF NOT EXISTS track_config (
 DROP TABLE IF EXISTS events;
 
 CREATE TABLE IF NOT EXISTS events (
-  event_id BIGSERIAL PRIMARY KEY,
+  event_id INTEGER PRIMARY KEY,
   server_name VARCHAR(250) NULL,
   track_config_id INT NOT NULL,
   event_name VARCHAR(250) NULL,
@@ -49,7 +49,7 @@ CREATE TABLE IF NOT EXISTS events (
 DROP TABLE IF EXISTS sessions;
 
 CREATE TABLE IF NOT EXISTS sessions (
-  session_id BIGSERIAL PRIMARY KEY,
+  session_id INTEGER PRIMARY KEY,
   event_id INT NOT NULL,
   car_id INT NOT NULL,
   session_type SMALLINT NULL,
@@ -86,7 +86,7 @@ CREATE TABLE IF NOT EXISTS schemainfo (
 DROP TABLE IF EXISTS cars;
 
 CREATE TABLE IF NOT EXISTS cars (
-  car_id BIGSERIAL PRIMARY KEY,
+  car_id INTEGER PRIMARY KEY,
   display_name VARCHAR(150) NULL DEFAULT NULL,
   car_name VARCHAR(150) NOT NULL,
   manufacturer VARCHAR(150) NOT NULL,
@@ -100,7 +100,7 @@ CREATE TABLE IF NOT EXISTS cars (
 DROP TABLE IF EXISTS teams;
 
 CREATE TABLE IF NOT EXISTS teams (
-  team_id BIGSERIAL PRIMARY KEY,
+  team_id INTEGER PRIMARY KEY,
   event_id INT NOT NULL,
   team_name VARCHAR(100) NULL,
   team_no SMALLINT NULL,
@@ -115,7 +115,7 @@ CREATE TABLE IF NOT EXISTS teams (
 DROP TABLE IF EXISTS drivers;
 
 CREATE TABLE IF NOT EXISTS drivers (
-  driver_id BIGSERIAL PRIMARY KEY,
+  driver_id INTEGER PRIMARY KEY,
   driver_name VARCHAR(100) NOT NULL,
   prev_name VARCHAR(100) NULL DEFAULT NULL,
   steam64_id BIGINT NOT NULL,
@@ -128,7 +128,7 @@ CREATE TABLE IF NOT EXISTS drivers (
 DROP TABLE IF EXISTS team_members;
 
 CREATE TABLE IF NOT EXISTS team_members (
-  team_member_id BIGSERIAL PRIMARY KEY,
+  team_member_id INTEGER PRIMARY KEY,
   team_id INT NOT NULL,
   driver_id INT NOT NULL,
   role VARCHAR(20) NULL,
@@ -141,7 +141,7 @@ CREATE TABLE IF NOT EXISTS team_members (
 DROP TABLE IF EXISTS laps;
 
 CREATE TABLE IF NOT EXISTS laps (
-  lap_id BIGSERIAL PRIMARY KEY,
+  lap_id INTEGER PRIMARY KEY,
   stint_id INT NOT NULL,
   sector_1 INT NULL,
   sector_2 INT NULL,
@@ -178,7 +178,7 @@ CREATE TABLE IF NOT EXISTS laps (
 DROP TABLE IF EXISTS stints ;
 
 CREATE TABLE IF NOT EXISTS stints (
-  stint_id BIGSERIAL PRIMARY KEY,
+  stint_id INTEGER PRIMARY KEY,
   driver_id INT NULL,
   team_member_id INT NULL DEFAULT NULL,
   session_id INT NULL,
@@ -198,7 +198,7 @@ CREATE TABLE IF NOT EXISTS stints (
 DROP TABLE IF EXISTS session_feed ;
 
 CREATE TABLE IF NOT EXISTS session_feed (
-  session_feed_id BIGSERIAL PRIMARY KEY,
+  session_feed_id INTEGER PRIMARY KEY,
   session_id INT NOT NULL,
   type INT NOT NULL,
   detail VARCHAR(200) NULL,
@@ -210,23 +210,21 @@ CREATE TABLE IF NOT EXISTS session_feed (
 DROP TABLE IF EXISTS telemetry ;
 
 CREATE TABLE IF NOT EXISTS telemetry (
-  telemetry_id BIGSERIAL PRIMARY KEY,
+  telemetry_id INTEGER PRIMARY KEY,
   lap_id INT NOT NULL,
   points INT NULL,
-  brake BYTEA NULL,
-  accel BYTEA NULL,
-  speed BYTEA NULL,
-  steer BYTEA NULL,
-  turbo BYTEA NULL,
-  gear BYTEA NULL,
-  rpms BYTEA NULL,
-  kers BYTEA NULL,
-  wind BYTEA NULL);
+  brake BLOB NULL,
+  accel BLOB NULL,
+  speed BLOB NULL,
+  steer BLOB NULL,
+  turbo BLOB NULL,
+  gear BLOB NULL,
+  rpms BLOB NULL,
+  kers BLOB NULL,
+  wind BLOB NULL);
 
 -- -----------------------------------------------------
 -- Insert default values
 -- -----------------------------------------------------
 INSERT INTO schemainfo VALUES ('1.0', 'simmonitor');
 
-create function unhex(text) returns bytea language sql immutable strict as $$ select decode($1, 'hex') $$;
-create function hex(bytea) returns text language sql immutable strict as $$ select encode($1, 'hex') $$;

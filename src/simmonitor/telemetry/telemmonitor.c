@@ -60,8 +60,19 @@ int sectortimes[4];
 
 void telemetryinit(SimData* SimData, SimMap* simmap, SMSettings* sms)
 {
-    slogt("Attempting postgresql database connection");
-    conn = h_connect_pgsql(sms->db_conn);
+    slogt("Attempting database connection");
+    switch ( sms->db_type )
+    {
+        case HOEL_DB_TYPE_PGSQL:
+            conn = h_connect_pgsql(sms->db_conn);
+            break;
+        case HOEL_DB_TYPE_SQLITE:
+            conn = h_connect_sqlite(sms->db_conn);
+            break;
+        default:
+            sms->dberr = E_DB_UNSUPPORTED;
+            return;
+    }
 
     if (conn == NULL)
     {

@@ -76,14 +76,14 @@ int getsessions(struct _h_connection* conn, const char* sessionname, SessionDbo*
 {
     struct _h_result result;
     struct _h_data* data;
-    char* query = malloc(515 * sizeof(char));
+    char* query;
     slogt("Performing query sessions");
 
-    sprintf(query, "select sessions.session_id, events.event_id, sessions.event_type, table1.stints, track_config.display_name, cars.car_name, start_time "
+    asprintf(&query, "select sessions.session_id, events.event_id, sessions.event_type, table1.stints, track_config.display_name, cars.car_name, start_time "
             "FROM %s JOIN events ON sessions.event_id=events.event_id JOIN track_config ON events.track_config_id=track_config.track_config_id "
             "JOIN cars ON sessions.car_id=cars.car_id "
             "JOIN (Select session_id, COUNT(stint_id) AS stints FROM stints GROUP BY session_id) AS table1 ON table1.session_id=sessions.session_id "
-            "ORDER BY session_id DESC LIMIT 25", "Sessions");
+            "ORDER BY sessions.session_id DESC LIMIT 25", "Sessions");
 
     int errcode = h_query_select(conn, query, &result);
     if (errcode == H_OK)
@@ -346,7 +346,6 @@ int addsession(struct _h_connection* conn, int eventid, int carid, int sessionty
     json_object_set_new(values, "car_id", json_integer(carid));
     json_object_set_new(values, "session_type", json_integer(sessiontype));
     json_object_set_new(values, "duration_min", json_integer(60));
-    json_object_set_new(values, "start_time", json_string("NOW()"));
     json_object_set_new(values, "session_name", json_string("default"));
     json_object_set_new(values, "air_temp", json_integer(airtemp));
     json_object_set_new(values, "road_temp", json_integer(tracktemp));
@@ -460,7 +459,6 @@ int addstint(struct _h_connection* conn, int sessionid, int driverid, int carid,
     // best_lap_id
     json_object_set_new(values, "is_finished", json_integer(0));
 
-    json_object_set_new(values, "started_at", json_string("NOW()") );
     json_array_append(json_arr, values);
 
     char* qq;
@@ -592,7 +590,7 @@ int closelap(struct _h_connection* conn, int lapid, int sector1, int sector2, in
     int laptime = (simdata->lastlap.minutes * 60000) + (simdata->lastlap.seconds * 1000) + simdata->lastlap.fraction;
     char* query;
 
-    asprintf(&query, "UPDATE %s SET %s=%i, %s=%i, %s=%i, %s=%i, %s=%f, %s=%f, %s=%f, %s=%f, %s=%f, %s=%f, %s=%f, %s=%f, %s=%f, %s=%f, %s=%f, %s=%f, %s=%f, %s=%f, %s=%f, %s=%f, %s=%f, %s=%f, finished_at=NOW() WHERE lap_id=%i;",
+    asprintf(&query, "UPDATE %s SET %s=%i, %s=%i, %s=%i, %s=%i, %s=%f, %s=%f, %s=%f, %s=%f, %s=%f, %s=%f, %s=%f, %s=%f, %s=%f, %s=%f, %s=%f, %s=%f, %s=%f, %s=%f, %s=%f, %s=%f, %s=%f, %s=%f, finished_at=CURRENT_TIMESTAMP WHERE lap_id=%i;",
              "laps", "time", laptime, "sector_1", sector1, "sector_2", sector2, "sector_3", sector3,
              "right_front_tyre_temp", simdata->tyretemp[1],
              "right_rear_tyre_temp",  simdata->tyretemp[3],
@@ -637,8 +635,8 @@ int closesession(struct _h_connection* conn, int sessionid)
 // | start_time | duration_min | elapsed_ms | laps | weather |
 // air_temp | road_temp | start_grip | end_grip | is_finished
 
-    char* query = malloc((sizeof(char)*100));
-    sprintf(query, "UPDATE %s SET is_finished=1, finished_at=NOW() WHERE session_id=%i",
+    char* query;
+    asprintf(&query, "UPDATE %s SET is_finished=1, finished_at=CURRENT_TIMESTAMP WHERE session_id=%i",
             "sessions", sessionid);
 
     int errcode = h_query_update(conn, query);
@@ -661,8 +659,8 @@ int closestint(struct _h_connection* conn, int stintid, int stintlaps, int valid
 // best_lap_id
     slogt("closing previous stint ", stintid);
 
-    char* query = malloc((sizeof(char)*146));
-    sprintf(query, "UPDATE %s SET %s = %i, %s = %i, is_finished=1, finished_at=NOW() WHERE stint_id=%i",
+    char* query;
+    asprintf(&query, "UPDATE %s SET %s = %i, %s = %i, is_finished=1, finished_at=CURRENT_TIMESTAMP WHERE stint_id=%i",
             "stints", "laps", stintlaps, "valid_laps", validstintlaps, stintid);
 
     int errcode = h_query_update(conn, query);

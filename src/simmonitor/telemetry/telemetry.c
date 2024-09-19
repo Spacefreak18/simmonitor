@@ -32,8 +32,11 @@ int telem_result(struct _h_result result, int doublefields, int intfields, int* 
     {
         for (col=0; col<result.nb_columns; col++)
         {
+
+            slogt("col type %i", result.data[row][col].type);
             switch(result.data[row][col].type)
             {
+
                 case HOEL_COL_TYPE_INT:
                     int cc = ((struct _h_type_int*)result.data[row][col].t_data)->value;
                     if (col == 1)
@@ -45,33 +48,37 @@ int telem_result(struct _h_result result, int doublefields, int intfields, int* 
                     //intarrays = malloc((sizeof(int)*1736)*3);
                     break;
                 case HOEL_COL_TYPE_TEXT:
-                    slogi("| %s ", ((struct _h_type_text*)result.data[row][col].t_data)->value);
-                    break;
+                    // sqlite blobs are coming over as text
+                    //slogi("| %s ", ((struct _h_type_text*)result.data[row][col].t_data)->value);
+                    //break;
                 case HOEL_COL_TYPE_BLOB:
                     int offset2 = 0;
 
+
                     int j = 0;
-                    i = 2;
+                    i = 0;
                     if (col < 5)
                     {
                         while (i<((struct _h_type_blob*)result.data[row][col].t_data)->length)
                         {
+                            int k = 0;
                             char sss[10];
                             sss[0] = '0';
                             sss[1] = 'x';
-                            sss[2] = *((char*)((struct _h_type_blob*)result.data[row][col].t_data)->value+offset2+2);
-                            sss[3] = *((char*)((struct _h_type_blob*)result.data[row][col].t_data)->value+offset2+3);
-                            sss[4] = *((char*)((struct _h_type_blob*)result.data[row][col].t_data)->value+offset2+4);
-                            sss[5] = *((char*)((struct _h_type_blob*)result.data[row][col].t_data)->value+offset2+5);
-                            sss[6] = *((char*)((struct _h_type_blob*)result.data[row][col].t_data)->value+offset2+6);
-                            sss[7] = *((char*)((struct _h_type_blob*)result.data[row][col].t_data)->value+offset2+7);
-                            sss[8] = *((char*)((struct _h_type_blob*)result.data[row][col].t_data)->value+offset2+8);
-                            sss[9] = *((char*)((struct _h_type_blob*)result.data[row][col].t_data)->value+offset2+9);
-                            long val;
+                            sss[2] = *((char*)((struct _h_type_blob*)result.data[row][col].t_data)->value+offset2+0+k);
+                            sss[3] = *((char*)((struct _h_type_blob*)result.data[row][col].t_data)->value+offset2+1+k);
+                            sss[4] = *((char*)((struct _h_type_blob*)result.data[row][col].t_data)->value+offset2+2+k);
+                            sss[5] = *((char*)((struct _h_type_blob*)result.data[row][col].t_data)->value+offset2+3+k);
+                            sss[6] = *((char*)((struct _h_type_blob*)result.data[row][col].t_data)->value+offset2+4+k);
+                            sss[7] = *((char*)((struct _h_type_blob*)result.data[row][col].t_data)->value+offset2+5+k);
+                            sss[8] = *((char*)((struct _h_type_blob*)result.data[row][col].t_data)->value+offset2+6+k);
+                            sss[9] = *((char*)((struct _h_type_blob*)result.data[row][col].t_data)->value+offset2+7+k);
+                            //long val;
                             uint32_t number = (uint32_t)strtol(sss, NULL, 16);
-                            uint32_t swapped = (uint32_t)__bswap_32(number);
+                            //uint32_t swapped = (uint32_t)__bswap_32(number);
 
-                            intarrays[j+intarrayoffset] = (uint32_t)__bswap_32(number);
+                            //intarrays[j+intarrayoffset] = (uint32_t)__bswap_32(number);
+                            intarrays[j+intarrayoffset] = (uint32_t)(number);
                             offset2 = offset2 + 8;
                             i+=8;
                             j++;
@@ -82,29 +89,32 @@ int telem_result(struct _h_result result, int doublefields, int intfields, int* 
                     {
                         while (i<((struct _h_type_blob*)result.data[row][col].t_data)->length)
                         {
-                            char sss[18];
+                            int k = 0;
+                            char sss[19];
                             sss[0] = '0';
                             sss[1] = 'x';
-                            sss[2] = *((char*)((struct _h_type_blob*)result.data[row][col].t_data)->value+offset2+2);
-                            sss[3] = *((char*)((struct _h_type_blob*)result.data[row][col].t_data)->value+offset2+3);
-                            sss[4] = *((char*)((struct _h_type_blob*)result.data[row][col].t_data)->value+offset2+4);
-                            sss[5] = *((char*)((struct _h_type_blob*)result.data[row][col].t_data)->value+offset2+5);
-                            sss[6] = *((char*)((struct _h_type_blob*)result.data[row][col].t_data)->value+offset2+6);
-                            sss[7] = *((char*)((struct _h_type_blob*)result.data[row][col].t_data)->value+offset2+7);
-                            sss[8] = *((char*)((struct _h_type_blob*)result.data[row][col].t_data)->value+offset2+8);
-                            sss[9] = *((char*)((struct _h_type_blob*)result.data[row][col].t_data)->value+offset2+9);
-                            sss[2+8] = *((char*)((struct _h_type_blob*)result.data[row][col].t_data)->value+offset2+2+8);
-                            sss[3+8] = *((char*)((struct _h_type_blob*)result.data[row][col].t_data)->value+offset2+3+8);
-                            sss[4+8] = *((char*)((struct _h_type_blob*)result.data[row][col].t_data)->value+offset2+4+8);
-                            sss[5+8] = *((char*)((struct _h_type_blob*)result.data[row][col].t_data)->value+offset2+5+8);
-                            sss[6+8] = *((char*)((struct _h_type_blob*)result.data[row][col].t_data)->value+offset2+6+8);
-                            sss[7+8] = *((char*)((struct _h_type_blob*)result.data[row][col].t_data)->value+offset2+7+8);
-                            sss[8+8] = *((char*)((struct _h_type_blob*)result.data[row][col].t_data)->value+offset2+8+8);
-                            sss[9+8] = *((char*)((struct _h_type_blob*)result.data[row][col].t_data)->value+offset2+9+8);
-                            long val;
-                            int64_t number = (int64_t) strtoll(sss, NULL, 16);
-                            int64_t swapped = __bswap_64(number);
-                            double d = *((double*)&swapped);
+                            sss[2] = *((char*)((struct _h_type_blob*)result.data[row][col].t_data)->value+offset2+0+k);
+                            sss[3] = *((char*)((struct _h_type_blob*)result.data[row][col].t_data)->value+offset2+1+k);
+                            sss[4] = *((char*)((struct _h_type_blob*)result.data[row][col].t_data)->value+offset2+2+k);
+                            sss[5] = *((char*)((struct _h_type_blob*)result.data[row][col].t_data)->value+offset2+3+k);
+                            sss[6] = *((char*)((struct _h_type_blob*)result.data[row][col].t_data)->value+offset2+4+k);
+                            sss[7] = *((char*)((struct _h_type_blob*)result.data[row][col].t_data)->value+offset2+5+k);
+                            sss[8] = *((char*)((struct _h_type_blob*)result.data[row][col].t_data)->value+offset2+6+k);
+                            sss[9] = *((char*)((struct _h_type_blob*)result.data[row][col].t_data)->value+offset2+7+k);
+                            sss[2+8] = *((char*)((struct _h_type_blob*)result.data[row][col].t_data)->value+offset2+0+8+k);
+                            sss[3+8] = *((char*)((struct _h_type_blob*)result.data[row][col].t_data)->value+offset2+1+8+k);
+                            sss[4+8] = *((char*)((struct _h_type_blob*)result.data[row][col].t_data)->value+offset2+2+8+k);
+                            sss[5+8] = *((char*)((struct _h_type_blob*)result.data[row][col].t_data)->value+offset2+3+8+k);
+                            sss[6+8] = *((char*)((struct _h_type_blob*)result.data[row][col].t_data)->value+offset2+4+8+k);
+                            sss[7+8] = *((char*)((struct _h_type_blob*)result.data[row][col].t_data)->value+offset2+5+8+k);
+                            sss[8+8] = *((char*)((struct _h_type_blob*)result.data[row][col].t_data)->value+offset2+6+8+k);
+                            sss[9+8] = *((char*)((struct _h_type_blob*)result.data[row][col].t_data)->value+offset2+7+8+k);
+                            sss[18] = 0;
+                            //long val;
+                            //slogt("%s",sss);
+                            unsigned long long number;
+                            number = strtoull(sss, NULL, 16);
+                            double d = *((double*)&number);
                             doublearrays[j+doublearrayoffset] = (double) d;
                             offset2 = offset2 + 16;
                             i+=16;
@@ -141,6 +151,8 @@ int telem_result(struct _h_result result, int doublefields, int intfields, int* 
                     break;
             }
         }
+
+
         printf("|\n");
     }
 
@@ -182,8 +194,9 @@ int dumptelemetrytofile(struct _h_connection* conn, char* datadir, int lap1id, i
 
     struct _h_result result1;
     struct _h_data* data1;
-    char* query1 = malloc(150 * sizeof(char));
-    sprintf(query1, "SELECT lap_id, points, speed, rpms, gear, brake, accel, steer FROM %s WHERE %s=%i", "telemetry", "lap_id", lap1id);
+    char* query1;
+    //asprintf(&query1, "SELECT lap_id, points, speed, rpms, gear, brake, accel, steer FROM %s WHERE %s=%i", "telemetry", "lap_id", lap1id);
+    asprintf(&query1, "SELECT lap_id, points, hex(speed), hex(rpms), hex(gear), hex(brake), hex(accel), hex(steer) FROM %s WHERE %s=%i", "telemetry", "lap_id", lap1id);
     if (h_query_select(conn, query1, &result1) == H_OK)
     {
         //laps->rows = malloc(sizeof(LapRowData) * result.nb_rows);
@@ -200,8 +213,9 @@ int dumptelemetrytofile(struct _h_connection* conn, char* datadir, int lap1id, i
 
     struct _h_result result2;
     struct _h_data* data2;
-    char* query2 = malloc(150 * sizeof(char));
-    sprintf(query2, "SELECT lap_id, points, speed, rpms, gear, brake, accel, steer FROM %s WHERE %s=%i", "telemetry", "lap_id", lap2id);
+    char* query2;
+    //asprintf(&query2, "SELECT lap_id, points, speed, rpms, gear, brake, accel, steer FROM %s WHERE %s=%i", "telemetry", "lap_id", lap2id);
+    asprintf(&query2, "SELECT lap_id, points, hex(speed), hex(rpms), hex(gear), hex(brake), hex(accel), hex(steer) FROM %s WHERE %s=%i", "telemetry", "lap_id", lap2id);
     if (h_query_select(conn, query2, &result2) == H_OK)
     {
         //laps->rows = malloc(sizeof(LapRowData) * result.nb_rows);
@@ -267,39 +281,33 @@ int dumptelemetrytofile(struct _h_connection* conn, char* datadir, int lap1id, i
     return 1;
 }
 
-void print_bytes(void* ptr, int size)
+int updatetelemetry(struct _h_connection* conn, int telemid, int samples, size_t size, const char* column, void* data)
 {
-    char* pp = malloc((size*2)+1);
-    char output[(size * 2) + 1];
-    char* ppp = &output[0];
-    unsigned char* p = ptr;
-    int i;
-    for (i=0; i<size; i++)
-    {
-        slogt("%02hhX", p[i]);
-        ppp += sprintf(ppp, "%02X", p[i]);
-        //snprintf(pp, (size*2)+1, "%s%02hhX", pp, p[i]);
-    }
-    slogt("\n");
-    slogt("bytes %s", output);
-}
-
-int updatetelemetry(struct _h_connection* conn, int telemid, int size, const char* column, void* data)
-{
-
-    //char *pp = malloc((size*2)+1);
-    char output[(size * 2) + 1];
+    int totalsize = samples * size;
+    char output[(totalsize * 2) + 1];
     char* ppp = &output[0];
     unsigned char* p = data;
-    int i;
-    for (i=0; i<size; i++)
+    int i = 0;
+    int k = size - 1;
+    while (i<totalsize)
     {
-        ppp += sprintf(ppp, "%02hhX", p[i]);
-        //snprintf(pp, (size*2)+1, "%s%02hhX", pp, p[i]);
+        k = size - 1;
+        while (k >= 0)
+        {
+            ppp += sprintf(ppp, "%02hhX", p[i+k]);
+            k--;
+        }
+        i = i + size;
     }
 
-    char* query = malloc((sizeof(char)*71)+(sizeof(column))+(size*2)+1);
-    sprintf(query, "UPDATE telemetry SET %s = decode('%s', 'hex') WHERE telemetry_id = %i", column, &output, telemid);
+    //print_bytes(output, size);
+    //char* query;
+    //slogt("data %s", &output);
+    char* query;
+    //char* query = malloc((sizeof(char)*71)+(sizeof(column))+(size*2)+1);
+    //sprintf(query, "UPDATE telemetry SET %s = decode('%s', 'hex') WHERE telemetry_id = %i", column, &output, telemid);
+    asprintf(&query, "UPDATE telemetry SET %s = unhex('%s') WHERE telemetry_id = %i", column, &output, telemid);
+    slogt("query: %s", query);
     int res1 = h_query_update(conn, query);
     //int res1 = h_insert(conn, j_query, NULL);
     slogt("got res %i", res1);
@@ -313,12 +321,12 @@ int updatetelemetrydata(struct _h_connection* conn, int tracksamples, int telemi
                         double* steerdata, double* acceldata, double* brakedata)
 {
     int b = 0;
-    b = updatetelemetry(conn, telemid, tracksamples* sizeof(double), "steer", steerdata);
-    b = updatetelemetry(conn, telemid, tracksamples* sizeof(double), "accel", acceldata);
-    b = updatetelemetry(conn, telemid, tracksamples* sizeof(double), "brake", brakedata);
-    b = updatetelemetry(conn, telemid, tracksamples* sizeof(int), "rpms", rpmdata);
-    b = updatetelemetry(conn, telemid, tracksamples* sizeof(int), "gear", geardata);
-    b = updatetelemetry(conn, telemid, tracksamples* sizeof(int), "speed", speeddata);
+    b = updatetelemetry(conn, telemid, tracksamples, sizeof(double), "steer", steerdata);
+    b = updatetelemetry(conn, telemid, tracksamples, sizeof(double), "accel", acceldata);
+    b = updatetelemetry(conn, telemid, tracksamples, sizeof(double), "brake", brakedata);
+    b = updatetelemetry(conn, telemid, tracksamples, sizeof(int), "rpms", rpmdata);
+    b = updatetelemetry(conn, telemid, tracksamples, sizeof(int), "gear", geardata);
+    b = updatetelemetry(conn, telemid, tracksamples, sizeof(int), "speed", speeddata);
 
     return b;
 }

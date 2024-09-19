@@ -67,6 +67,7 @@ typedef enum
     E_BAD_CONFIG       = 1,
     E_FAILED_DB_CONN   = 2,
     E_DB_QUERY_FAIL    = 3,
+    E_DB_UNSUPPORTED   = 4,
 }
 SimMonitorError;
 

@@ -5,6 +5,7 @@
 #include <stdlib.h>
 #include <unistd.h>
 #include <ctype.h>
+#include <hoel.h>
 
 #include "confighelper.h"
 
@@ -227,7 +228,7 @@ int getuiconfigtouse(const char* config_file_str, char* car, int sim)
     return confignum;
 }
 
-int loadconnectionconfig(config_t* cfg, SMSettings* p)
+int loadconnectionconfig(config_t* cfg, SMSettings* sms)
 {
     config_setting_t* config_db_array = NULL;
     config_db_array = config_lookup(cfg, "db");
@@ -240,21 +241,34 @@ int loadconnectionconfig(config_t* cfg, SMSettings* p)
         slogi("found no db settings");
         return E_BAD_CONFIG;
     }
+
+    int dbtype = 0;
+    config_setting_lookup_int(config_db, "type", &dbtype);
+
     const char* temp;
-    config_setting_lookup_string(config_db, "user", &temp);
-    p->db_user = strdup(temp);
-    config_setting_lookup_string(config_db, "password", &temp);
-    p->db_pass = strdup(temp);
-    config_setting_lookup_string(config_db, "server", &temp);
-    p->db_serv = strdup(temp);
-    config_setting_lookup_string(config_db, "database", &temp);
-    p->db_dbnm = strdup(temp);
+    if (dbtype > HOEL_DB_TYPE_SQLITE)
+    {
+        sms->db_type = HOEL_DB_TYPE_PGSQL;
+        slogt("config file defines a postgres database");
+        config_setting_lookup_string(config_db, "user", &temp);
+        sms->db_user = strdup(temp);
+        config_setting_lookup_string(config_db, "password", &temp);
+        sms->db_pass = strdup(temp);
+        config_setting_lookup_string(config_db, "server", &temp);
+        sms->db_serv = strdup(temp);
+        config_setting_lookup_string(config_db, "database", &temp);
+        sms->db_dbnm = strdup(temp);
 
-    size_t strsize = strlen(p->db_user) + strlen(p->db_pass) + strlen(p->db_serv) + strlen(p->db_dbnm) + 29 + 1;
-    p->db_conn = malloc(strsize);
-
-    snprintf(p->db_conn, strsize, "host=%s dbname=%s user=%s password=%s", p->db_serv, p->db_dbnm, p->db_user, p->db_pass);
-
+        asprintf(&sms->db_conn, "host=%s dbname=%s user=%s password=%s", sms->db_serv, sms->db_dbnm, sms->db_user, sms->db_pass);
+    }
+    else
+    {
+        sms->db_type = HOEL_DB_TYPE_SQLITE;
+        slogt("config file defines a sqlite database");
+        config_setting_lookup_string(config_db, "database", &temp);
+        sms->db_serv = strdup(temp);
+        sms->db_conn = strdup(temp);
+    }
     return E_NO_ERROR;
 }
 

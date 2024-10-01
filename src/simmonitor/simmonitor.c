@@ -91,6 +91,7 @@ void SetSettingsFromParameters(Parameters* p, SMSettings* sms, char* configdir_s
     }
 
     sms->mysql = p->mysql;
+    sms->force_udp_mode = p->udp;
     sms->program_action = A_BROWSE;
     if (p->program_action == A_PLAY)
     {

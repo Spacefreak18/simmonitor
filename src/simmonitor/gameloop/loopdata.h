@@ -11,12 +11,13 @@
 typedef struct loop_data
 {
     uv_work_t req;
-    Simulator sim;
+    SimulatorAPI sim;
     int numfonts;
     int numwidgets;
     bool simstate;
     bool uion;
     bool releasing;
+    bool use_udp;
     SMSettings* sms;
     SimData* simdata;
     SimMap* simmap;

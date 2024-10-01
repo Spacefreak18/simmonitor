@@ -92,6 +92,7 @@ ConfigError getParameters(int argc, char** argv, Parameters* p)
     // set return structure defaults
     p->program_action      = 0;
     p->mysql               = false;
+    p->udp                 = false;
     p->verbosity_count     = 0;
 
     p->ui_string           = NULL;
@@ -119,6 +120,7 @@ ConfigError getParameters(int argc, char** argv, Parameters* p)
     struct arg_rex* cmd1              = arg_rex1(NULL, NULL, "play", NULL, REG_ICASE, NULL);
     struct arg_rex* cmd2              = arg_rex1(NULL, NULL, "browse", NULL, REG_ICASE, NULL);
     struct arg_str* arg_ui            = arg_strn("u", "ui", "<ui>", 0, 1, NULL);
+    struct arg_lit* arg_udp           = arg_lit0("d", "udp", "force udp mode for sims which support it");
     struct arg_file* arg_dbconf       = arg_filen(NULL, "dbconf", "<db_config_file>", 0, 1, NULL);
     struct arg_file* arg_uiconf       = arg_filen(NULL, "uiconf", "<ui_config_file>", 0, 1, NULL);
     struct arg_file* arg_css          = arg_filen("c", "css", "<css_file>", 0, 1, NULL);
@@ -134,7 +136,7 @@ ConfigError getParameters(int argc, char** argv, Parameters* p)
     struct arg_lit* help1             = arg_litn(NULL,"help", 0, 1, "print this help and exit");
     struct arg_lit* vers1             = arg_litn(NULL,"version", 0, 1, "print version information and exit");
     struct arg_end* end1              = arg_end(20);
-    void* argtable0[]                 = {cmd1,arg_ui,arg_verbosity0,arg_mysql,arg_uiconf,arg_dbconf,arg_css,arg_log,help0,vers0,end0};
+    void* argtable0[]                 = {cmd1,arg_ui,arg_udp,arg_verbosity0,arg_mysql,arg_uiconf,arg_dbconf,arg_css,arg_log,help0,vers0,end0};
     void* argtable1[]                 = {cmd2,arg_verbosity1,help1,vers1,end1};
     int nerrors0;
     int nerrors1;
@@ -167,6 +169,10 @@ ConfigError getParameters(int argc, char** argv, Parameters* p)
         if (arg_mysql->count > 0)
         {
             p->mysql = true;
+        }
+        if (arg_udp->count > 0)
+        {
+            p->udp = true;
         }
 
         if(arg_uiconf->count > 0)

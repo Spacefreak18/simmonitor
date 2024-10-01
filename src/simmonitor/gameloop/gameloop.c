@@ -41,6 +41,7 @@ uv_timer_t cursestimer;
 uv_timer_t xtimer;
 uv_timer_t fbtimer;
 uv_timer_t telemetrytimer;
+uv_udp_t recv_socket;
 
 bool doui = false;
 int appstate = 0;
@@ -54,6 +55,112 @@ void startdatalogger(SMSettings* sms, loop_data* l);
 void stopui(UIType ui, loop_data* l);
 void stopdatalogger(SMSettings* sms, loop_data* l);
 
+void simapilib_loginfo(char* message)
+{
+    slogi(message);
+}
+
+void simapilib_logdebug(char* message)
+{
+    slogd(message);
+}
+
+void simapilib_logtrace(char* message)
+{
+    slog_display(SLOG_TRACE, 1, message);
+}
+
+void loopstart(SMSettings* sms, loop_data* f, SimData* simdata)
+{
+    slogi("looking for ui config %s", sms->uiconfig_str);
+    int confignum = getuiconfigtouse(sms->uiconfig_str, simdata->car, f->sim);
+
+    int fonts = 0;
+    int widgets = 0;
+    uiconfigcheck(sms->uiconfig_str, confignum, &fonts, &widgets);
+    slogd("loading confignum %i, with %i widgets, and %i fonts.", confignum, fonts, widgets);
+    f->numfonts = fonts;
+    f->numwidgets = widgets;
+
+    FontInfo* fi = malloc(sizeof(FontInfo) * fonts);
+    SimUIWidget* simuiwidgets = malloc(sizeof(SimUIWidget) * widgets);
+
+
+    uiloadconfig(sms->uiconfig_str, confignum, fi, simuiwidgets, "/usr/share/fonts/TTF", sms);
+    f->simuiwidgets = simuiwidgets;
+    f->fi = fi;
+    doui = false;
+    f->uion = true;
+    slogd("starting ui");
+    startui(sms->ui_type, sms, f);
+    startdatalogger(sms, f);
+}
+
+void on_alloc(uv_handle_t* client, size_t suggested_size, uv_buf_t* buf) {
+    buf->base = malloc(suggested_size);
+    buf->len = suggested_size;
+    bzero(buf->base, suggested_size);
+    slogt("udp malloc:%lu %p\n",buf->len,buf->base);
+}
+
+static void on_udp_recv(uv_udp_t* handle, ssize_t nread, const uv_buf_t* rcvbuf, const struct sockaddr* addr, unsigned flags) {
+    if (nread > 0) {
+        slogt("udp data received");
+    }
+
+    char* a;
+    a = rcvbuf->base;
+
+    void* b = uv_handle_get_data((uv_handle_t*) handle);
+    loop_data* f = (loop_data*) b;
+    SimData* simdata = f->simdata;
+    SimMap* simmap = f->simmap;
+    SMSettings* sms = f->sms;
+
+    if (appstate == 2)
+    {
+        simdatamap(simdata, simmap, f->sim, true, a);
+    }
+
+    if (f->simstate == false || simdata->simstatus <= 1 || appstate <= 1)
+    {
+        if(f->releasing == false)
+        {
+            f->releasing = true;
+            f->uion = false;
+            slogi("stopped mapping data, press q again to quit");
+            stopdatalogger(sms, f);
+            stopui(sms->ui_type, f);
+            // free loop data
+            uv_udp_recv_stop(handle);
+
+            if(appstate > 0)
+            {
+                uv_timer_start(&datachecktimer, datacheckcallback, 3000, 1000);
+            }
+            f->releasing = false;
+            if(appstate > 1)
+            {
+                appstate = 1;
+            }
+        }
+    }
+
+    slogt("udp free  :%lu %p\n",rcvbuf->len,rcvbuf->base);
+    free(rcvbuf->base);
+}
+
+int startudp(int port)
+{
+    uv_udp_init(uv_default_loop(), &recv_socket);
+    struct sockaddr_in recv_addr;
+    uv_ip4_addr("0.0.0.0", port, &recv_addr);
+    int err = uv_udp_bind(&recv_socket, (const struct sockaddr *) &recv_addr, UV_UDP_REUSEADDR);
+
+    slogt("initial udp error is %i", err);
+    return err;
+}
+
 void shmdatamapcallback(uv_timer_t* handle)
 {
 
@@ -65,31 +172,10 @@ void shmdatamapcallback(uv_timer_t* handle)
     //appstate = 2;
     if (appstate == 2)
     {
-        simdatamap(simdata, simmap, f->sim);
+        simdatamap(simdata, simmap, f->sim, false, NULL);
         if (doui == true)
         {
-            slogi("looking for ui config %s", sms->uiconfig_str);
-            int confignum = getuiconfigtouse(sms->uiconfig_str, simdata->car, f->sim);
-
-            int fonts = 0;
-            int widgets = 0;
-            uiconfigcheck(sms->uiconfig_str, confignum, &fonts, &widgets);
-            slogd("loading confignum %i, with %i widgets, and %i fonts.", confignum, fonts, widgets);
-            f->numfonts = fonts;
-            f->numwidgets = widgets;
-
-            FontInfo* fi = malloc(sizeof(FontInfo) * fonts);
-            SimUIWidget* simuiwidgets = malloc(sizeof(SimUIWidget) * widgets);
-
-
-            uiloadconfig(sms->uiconfig_str, confignum, fi, simuiwidgets, "/usr/share/fonts/TTF", sms);
-            f->simuiwidgets = simuiwidgets;
-            f->fi = fi;
-            doui = false;
-            f->uion = true;
-            slogd("starting ui");
-            startui(sms->ui_type, sms, f);
-            startdatalogger(sms, f);
+            loopstart(sms, f, simdata);
         }
     }
 
@@ -118,9 +204,21 @@ void shmdatamapcallback(uv_timer_t* handle)
     }
 }
 
+
+void udpstart(SMSettings* sms, loop_data* f, SimData* simdata, SimMap* simmap)
+{
+    if (appstate == 2)
+    {
+        simdatamap(simdata, simmap, f->sim, true, NULL);
+        if (doui == true)
+        {
+            loopstart(sms, f, simdata);
+        }
+    }
+}
+
 void datacheckcallback(uv_timer_t* handle)
 {
-
     void* b = uv_handle_get_data((uv_handle_t*) handle);
     loop_data* f = (loop_data*) b;
     SimData* simdata = f->simdata;
@@ -128,7 +226,16 @@ void datacheckcallback(uv_timer_t* handle)
 
     if ( appstate == 1 )
     {
-        getSim(simdata, simmap, &f->simstate, &f->sim);
+        SimInfo si = getSim(simdata, simmap, f->sms->force_udp_mode, startudp);
+        //TODO: move all this to a siminfo struct in loop_data
+        f->simstate = si.isSimOn;
+        f->sim = si.simulatorapi;
+        f->use_udp = si.SimUsesUDP;
+
+        if(f->sms->force_udp_mode == true)
+        {
+            f->use_udp = true;
+        }
     }
     if (f->simstate == true && simdata->simstatus >= 2)
     {
@@ -136,7 +243,18 @@ void datacheckcallback(uv_timer_t* handle)
         {
             appstate++;
             doui = true;
-            uv_timer_start(&datamaptimer, shmdatamapcallback, 2000, 16);
+
+            if(f->use_udp == true)
+            {
+                slogt("starting udp receive loop");
+                udpstart(f->sms, f, simdata, simmap);
+                uv_udp_recv_start(&recv_socket, on_alloc, on_udp_recv);
+                slogt("udp receive loop started");
+            }
+            else
+            {
+                uv_timer_start(&datamaptimer, shmdatamapcallback, 2000, 16);
+            }
             uv_timer_stop(handle);
         }
     }
@@ -259,6 +377,7 @@ void cb(uv_poll_t* handle, int status, int events)
     loop_data* f = (loop_data*) b;
     char ch;
     scanf("%c", &ch);
+    slogt("input callback");
     if (ch == 'q')
     {
         if(f->releasing == false && doui == false)
@@ -291,6 +410,7 @@ void cb(uv_poll_t* handle, int status, int events)
     if (appstate == 0)
     {
         slogi("Sim Monitor is exiting...");
+        uv_udp_recv_stop(&recv_socket);
         uv_timer_stop(&datachecktimer);
         uv_poll_stop(handle);
     }
@@ -331,6 +451,7 @@ int mainloop(SMSettings* sms)
     uv_handle_set_data((uv_handle_t*) &xtimer, (void*) baton);
     uv_handle_set_data((uv_handle_t*) &fbtimer, (void*) baton);
     uv_handle_set_data((uv_handle_t*) &telemetrytimer, (void*) baton);
+    uv_handle_set_data((uv_handle_t*) &recv_socket, (void*) baton);
     uv_handle_set_data((uv_handle_t*) poll, (void*) baton);
     appstate = 1;
     slogd("setting initial app state");
@@ -338,6 +459,9 @@ int mainloop(SMSettings* sms)
     fprintf(stdout, "Searching for sim data... Press q to quit...\n");
     uv_timer_start(&datachecktimer, datacheckcallback, 1000, 1000);
 
+    set_simapi_log_info(simapilib_loginfo);
+    set_simapi_log_debug(simapilib_logdebug);
+    set_simapi_log_trace(simapilib_logtrace);
 
     if (0 != uv_poll_init(uv_default_loop(), poll, 0))
     {

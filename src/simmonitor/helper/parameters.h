@@ -33,6 +33,7 @@ typedef struct
 
 
     bool  mysql;
+    bool  udp;
     int   verbosity_count;
     int err;
 
@@ -42,7 +43,6 @@ typedef struct
     char* db_pass;
     char* db_conn;
 
-    Simulator sim;
 }
 Parameters;
 

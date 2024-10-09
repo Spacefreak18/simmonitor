@@ -195,72 +195,76 @@ void telemetrycallback(uv_timer_t* handle)
     sessionstatus = SimData->session;
     lap = SimData->lap;
     sector = SimData->sectorindex;
-    if (SimData->lapisvalid == false && validind == true)
+    // in case you are in the middle of an execution and the sim has stopped
+    if (SimData->simstatus == 2)
     {
-        validind = false;
-    }
-    sectortimes[SimData->sectorindex] = SimData->lastsectorinms;
-    if (sessionstatus != lastsessionstatus)
-    {
-        closestint(conn, stintid, stintlaps, validstintlaps);
-        closesession(conn, sessionid);
-        if (sessionstatus > 1)
+        if (SimData->lapisvalid == false && validind == true)
         {
-            sessionid = addsession(conn, eventid, carid, SimData->session, SimData->airtemp, SimData->tracktemp, SimData);
+            validind = false;
+        }
+        sectortimes[SimData->sectorindex] = SimData->lastsectorinms;
+        if (sessionstatus != lastsessionstatus)
+        {
+            closestint(conn, stintid, stintlaps, validstintlaps);
+            closesession(conn, sessionid);
+            if (sessionstatus > 1)
+            {
+                sessionid = addsession(conn, eventid, carid, SimData->session, SimData->airtemp, SimData->tracktemp, SimData);
+            }
+
+            //pitstatus = 1;
+            stintlaps = 1;
+            validstintlaps = 0;
+        }
+        pitstatus = SimData->inpit;
+        if (SimData->inpit == true && pitstatus != lastpitstatus)
+        {
+            //pitstatus = 1;
+            //}
+            //if (pitstatus = 0 && pitstatus != lastpitstatus)
+            //{
+            // close last stint
+
+            closestint(conn, stintid, stintlaps, validstintlaps);
+            stintid = addstint(conn, sessionid, driverid, carid, SimData);
+            stintlaps = 1;
+            validstintlaps = 0;
+        }
+        if (lap != lastlap)
+        {
+            slogt("New lap detected");
+            stintlaps++;
+            if (validind == true)
+            {
+                validstintlaps++;
+            }
+
+            closelap(conn, stintlapid, sectortimes[1], sectortimes[2], SimData->lastsectorinms, 0, 0, maxspeed, avgspeed, SimData);
+
+            int telemid = addtelemetry(conn, track_samples, stintlapid);
+            int b = updatetelemetrydata(conn, track_samples, telemid, stintlapid, speeddata, rpmdata, geardata, steerdata, acceldata, brakedata);
+
+            stintlapid = addstintlap(conn, stintid, SimData);
+
+            maxspeed = 0;
+            avgspeed = 0;
+            tick = 0;
+            // assume lap is valid until it isn't
+            validind = true;
+            speeddata = calloc(track_samples, sizeof(SimData->velocity));
+            rpmdata = calloc(track_samples, sizeof(SimData->rpms));
+            geardata = calloc(track_samples, sizeof(SimData->gear));
+            steerdata = calloc(track_samples, sizeof(SimData->steer));
+            acceldata = calloc(track_samples, sizeof(SimData->gas));
+            brakedata = calloc(track_samples, sizeof(SimData->brake));
         }
 
-        //pitstatus = 1;
-        stintlaps = 1;
-        validstintlaps = 0;
+        lastpitstatus = pitstatus;
+        lastsessionstatus = sessionstatus;
+        lastsector = sector;
+        lastlap = lap;
+        tick++;
     }
-    pitstatus = SimData->inpit;
-    if (SimData->inpit == true && pitstatus != lastpitstatus)
-    {
-        //pitstatus = 1;
-        //}
-        //if (pitstatus = 0 && pitstatus != lastpitstatus)
-        //{
-        // close last stint
-
-        closestint(conn, stintid, stintlaps, validstintlaps);
-        stintid = addstint(conn, sessionid, driverid, carid, SimData);
-        stintlaps = 1;
-        validstintlaps = 0;
-    }
-    if (lap != lastlap)
-    {
-        slogt("New lap detected");
-        stintlaps++;
-        if (validind == true)
-        {
-            validstintlaps++;
-        }
-
-        closelap(conn, stintlapid, sectortimes[1], sectortimes[2], SimData->lastsectorinms, 0, 0, maxspeed, avgspeed, SimData);
-
-        int telemid = addtelemetry(conn, track_samples, stintlapid);
-        int b = updatetelemetrydata(conn, track_samples, telemid, stintlapid, speeddata, rpmdata, geardata, steerdata, acceldata, brakedata);
-
-        stintlapid = addstintlap(conn, stintid, SimData);
-
-        maxspeed = 0;
-        avgspeed = 0;
-        tick = 0;
-        // assume lap is valid until it isn't
-        validind = true;
-        speeddata = calloc(track_samples, sizeof(SimData->velocity));
-        rpmdata = calloc(track_samples, sizeof(SimData->rpms));
-        geardata = calloc(track_samples, sizeof(SimData->gear));
-        steerdata = calloc(track_samples, sizeof(SimData->steer));
-        acceldata = calloc(track_samples, sizeof(SimData->gas));
-        brakedata = calloc(track_samples, sizeof(SimData->brake));
-    }
-
-    lastpitstatus = pitstatus;
-    lastsessionstatus = sessionstatus;
-    lastsector = sector;
-    lastlap = lap;
-    tick++;
 
 
 

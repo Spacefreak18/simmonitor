@@ -119,7 +119,7 @@ static void on_udp_recv(uv_udp_t* handle, ssize_t nread, const uv_buf_t* rcvbuf,
 
     if (appstate == 2)
     {
-        simdatamap(simdata, simmap, f->sim, true, a);
+        simdatamap(simdata, simmap, NULL, f->sim, false, NULL);
     }
 
     if (f->simstate == false || simdata->simstatus <= 1 || appstate <= 1)
@@ -172,7 +172,7 @@ void shmdatamapcallback(uv_timer_t* handle)
     //appstate = 2;
     if (appstate == 2)
     {
-        simdatamap(simdata, simmap, f->sim, false, NULL);
+        simdatamap(simdata, simmap, NULL, f->sim, false, NULL);
         if (doui == true)
         {
             loopstart(sms, f, simdata);
@@ -209,7 +209,7 @@ void udpstart(SMSettings* sms, loop_data* f, SimData* simdata, SimMap* simmap)
 {
     if (appstate == 2)
     {
-        simdatamap(simdata, simmap, f->sim, true, NULL);
+        simdatamap(simdata, simmap, NULL, f->sim, true, NULL);
         if (doui == true)
         {
             loopstart(sms, f, simdata);
@@ -422,7 +422,7 @@ int mainloop(SMSettings* sms)
 {
 
     SimData* simdata = malloc(sizeof(SimData));
-    SimMap* simmap = malloc(sizeof(SimMap));
+    SimMap* simmap = createSimMap();
 
     struct termios newsettings, canonicalmode;
     tcgetattr(0, &canonicalmode);
@@ -493,7 +493,7 @@ int mainloop(SMSettings* sms)
 
     free(baton);
     free(simdata);
-    free(simmap);
+    freesimmap(simmap);
 
     return 0;
 }

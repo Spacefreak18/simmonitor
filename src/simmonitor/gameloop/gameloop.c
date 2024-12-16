@@ -226,7 +226,7 @@ void datacheckcallback(uv_timer_t* handle)
 
     if ( appstate == 1 )
     {
-        SimInfo si = getSim(simdata, simmap, f->sms->force_udp_mode, startudp);
+        SimInfo si = getSim(simdata, simmap, f->sms->force_udp_mode, startudp, false);
         //TODO: move all this to a siminfo struct in loop_data
         f->simstate = si.isSimOn;
         f->sim = si.simulatorapi;

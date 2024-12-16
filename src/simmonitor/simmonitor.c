@@ -92,29 +92,30 @@ void SetSettingsFromParameters(Parameters* p, SMSettings* sms, char* configdir_s
 
     sms->mysql = p->mysql;
     sms->force_udp_mode = p->udp;
-    sms->program_action = A_BROWSE;
     if (p->program_action == A_PLAY)
     {
-        sms->program_action = A_PLAY;
         sms->ui_type = SIMMONITOR_CLI;
-        slogd("determining user selected ui type");
-        if (strcicmp(p->ui_string, "x") == 0)
+        if(p->ui_string != NULL)
         {
-            sms->ui_type = SIMMONITOR_X;
-        }
-        if (strcicmp(p->ui_string, "web") == 0)
-        {
-            sms->ui_type = SIMMONITOR_WEB;
-        }
-        if (strcicmp(p->ui_string, "fb") == 0)
-        {
-            sms->ui_type = SIMMONITOR_FB;
-        }
-        if (strcicmp(p->ui_string, "curses") == 0)
-        {
-            sms->ui_type = SIMMONITOR_CURSES;
+            if (strcicmp(p->ui_string, "x") == 0)
+            {
+                sms->ui_type = SIMMONITOR_X;
+            }
+            if (strcicmp(p->ui_string, "web") == 0)
+            {
+                sms->ui_type = SIMMONITOR_WEB;
+            }
+            if (strcicmp(p->ui_string, "fb") == 0)
+            {
+                sms->ui_type = SIMMONITOR_FB;
+            }
+            if (strcicmp(p->ui_string, "curses") == 0)
+            {
+                sms->ui_type = SIMMONITOR_CURSES;
+            }
         }
     }
+
 }
 
 int main(int argc, char** argv)

@@ -402,7 +402,7 @@ void cb(uv_poll_t* handle, int status, int events)
         }
         if(ch == 's')
         {
-            fprintf(stdout, "status: %i\n flag: %i\n", simdata->simstatus, simdata->flag);
+            fprintf(stdout, "status: %i flag: %i\n", simdata->simstatus, simdata->flag);
             fflush(stdout);
         }
     }

@@ -117,115 +117,114 @@ void cursescallback(uv_timer_t* handle)
     SimData* simdata = f->simdata;
     SimMap* simmap = f->simmap;
 
-    //curses_init();
 
-    //timeout(DEFAULT_UPDATE_RATE);
-
-    //int go = true;
-    //char lastsimstatus = false;
-    //while (go == true && simdata->simstatus > 1 && p->err == E_NO_ERROR)
-    //{
-    //    simdatamap(simdata, simmap, p->sim);
-
+    slogt("curses callback");
     wclear(win1);
     wclear(win2);
     wclear(win3);
     wclear(win4);
-
+    slogt("initial clear");
     {
         // window 1 car diagnostics
 
         int row = 2;
         int col1 = 3;
         int col2 = 7;
-        char speed[5];
+        char* speed;
         wbkgd(win1,COLOR_PAIR(1));
         wattrset(win1, COLOR_PAIR(1));
-        snprintf(speed, 5, "%i", simdata->velocity);
+        asprintf(&speed, "%i", simdata->velocity);
         mvwaddnstr(win1, row, col1, "Speed:", -1);
         wattrset(win1, COLOR_PAIR(2));
         mvwaddnstr(win1, row, col1+col2, speed, -1);
         row++;
 
-        char rpm[6];
+        char* rpm;
         wbkgd(win1,COLOR_PAIR(1));
         wattrset(win1, COLOR_PAIR(1));
-        snprintf(rpm, 6, "%i", simdata->rpms);
+        asprintf(&rpm, "%i", simdata->rpms);
         mvwaddnstr(win1, row, col1, "RPM:", -1);
         wattrset(win1, COLOR_PAIR(2));
         mvwaddnstr(win1, row, col1+col2, rpm, -1);
         row++;
 
-        char gear[2];
+        char* gear;
         wbkgd(win1,COLOR_PAIR(1));
         wattrset(win1, COLOR_PAIR(1));
-        snprintf(gear, 2, "%i", simdata->gear);
+        asprintf(&gear, "%i", simdata->gear);
         mvwaddnstr(win1, row, col1, "Gear:", -1);
         wattrset(win1, COLOR_PAIR(2));
         mvwaddnstr(win1, row, col1+col2, gear, -1);
         row++;
 
-        char gas[14];
+        char* gas;
         wattrset(win1, COLOR_PAIR(1));
-        snprintf(gas, 14, "%f", simdata->gear);
+        asprintf(&gas, "%d", simdata->gear);
         mvwaddnstr(win1, row, col1, "Gas:", -1);
         wattrset(win1, COLOR_PAIR(2));
         mvwaddnstr(win1, row, col1+col2, gas, -1);
         row++;
 
-        char brake[14];
+        char* brake;
         wattrset(win1, COLOR_PAIR(1));
-        snprintf(brake, 14, "%f", simdata->brake);
+        asprintf(&brake, "%f", simdata->brake);
         mvwaddnstr(win1, row, col1, "Brake:", -1);
         wattrset(win1, COLOR_PAIR(2));
         mvwaddnstr(win1, row, col1+col2, brake, -1);
         row++;
 
-        char fuel[14];
+        char* fuel;
         wattrset(win1, COLOR_PAIR(1));
-        snprintf(fuel, 14, "%f", simdata->fuel);
+        asprintf(&fuel, "%f", simdata->fuel);
         mvwaddnstr(win1, row, col1, "Fuel: ", -1);
         wattrset(win1, COLOR_PAIR(2));
         mvwaddnstr(win1, row, col1+col2, fuel, -1);
         row++;
         row+=3;
 
+        free(speed);
+        free(rpm);
+        free(gear);
+        free(gas);
+        free(brake);
+        free(fuel);
+
         // setup tyre and brake data strings
-        char braketemp0[14];
-        snprintf(braketemp0, 14, "%.0f", simdata->braketemp[0]);
-        char braketemp1[14];
-        snprintf(braketemp1, 14, "%.0f", simdata->braketemp[1]);
-        char braketemp2[14];
-        snprintf(braketemp2, 14, "%.0f", simdata->braketemp[2]);
-        char braketemp3[14];
-        snprintf(braketemp3, 14, "%.0f", simdata->braketemp[3]);
+        char* braketemp0;
+        char* braketemp1;
+        char* braketemp2;
+        char* braketemp3;
+        asprintf(&braketemp0, "%.0f", simdata->braketemp[0]);
+        asprintf(&braketemp1, "%.0f", simdata->braketemp[1]);
+        asprintf(&braketemp2, "%.0f", simdata->braketemp[2]);
+        asprintf(&braketemp3, "%.0f", simdata->braketemp[3]);
 
-        char tyretemp0[14];
-        snprintf(tyretemp0, 14, "%.0f", simdata->tyretemp[0]);
-        char tyretemp1[14];
-        snprintf(tyretemp1, 14, "%.0f", simdata->tyretemp[1]);
-        char tyretemp2[14];
-        snprintf(tyretemp2, 14, "%.0f", simdata->tyretemp[2]);
-        char tyretemp3[14];
-        snprintf(tyretemp3, 14, "%.0f", simdata->tyretemp[3]);
+        char* tyretemp0;
+        char* tyretemp1;
+        char* tyretemp2;
+        char* tyretemp3;
+        asprintf(&tyretemp0, "%.0f", simdata->tyretemp[0]);
+        asprintf(&tyretemp1, "%.0f", simdata->tyretemp[1]);
+        asprintf(&tyretemp2, "%.0f", simdata->tyretemp[2]);
+        asprintf(&tyretemp3, "%.0f", simdata->tyretemp[3]);
 
-        char tyrepressure0[14];
-        snprintf(tyrepressure0, 14, "%.0f", simdata->tyrepressure[0]);
-        char tyrepressure1[14];
-        snprintf(tyrepressure1, 14, "%.0f", simdata->tyrepressure[1]);
-        char tyrepressure2[14];
-        snprintf(tyrepressure2, 14, "%.0f", simdata->tyrepressure[2]);
-        char tyrepressure3[14];
-        snprintf(tyrepressure3, 14, "%.0f", simdata->tyrepressure[3]);
+        char* tyrepressure0;
+        char* tyrepressure1;
+        char* tyrepressure2;
+        char* tyrepressure3;
+        asprintf(&tyrepressure0, "%.0f", simdata->tyrepressure[0]);
+        asprintf(&tyrepressure1, "%.0f", simdata->tyrepressure[1]);
+        asprintf(&tyrepressure2, "%.0f", simdata->tyrepressure[2]);
+        asprintf(&tyrepressure3, "%.0f", simdata->tyrepressure[3]);
 
-        char tyrewear0[14];
-        snprintf(tyrewear0, 14, "%.0f", simdata->tyrewear[0]);
-        char tyrewear1[14];
-        snprintf(tyrewear1, 14, "%.0f", simdata->tyrewear[1]);
-        char tyrewear2[14];
-        snprintf(tyrewear2, 14, "%.0f", simdata->tyrewear[2]);
-        char tyrewear3[14];
-        snprintf(tyrewear3, 14, "%.0f", simdata->tyrewear[3]);
+        char* tyrewear0;
+        char* tyrewear1;
+        char* tyrewear2;
+        char* tyrewear3;
+        asprintf(&tyrewear0, "%.0f", simdata->tyrewear[0]);
+        asprintf(&tyrewear1, "%.0f", simdata->tyrewear[1]);
+        asprintf(&tyrewear2, "%.0f", simdata->tyrewear[2]);
+        asprintf(&tyrewear3, "%.0f", simdata->tyrewear[3]);
 
         {
             int row = 11;
@@ -344,8 +343,25 @@ void cursescallback(uv_timer_t* handle)
             rectangle(18, 13, 22, 17);  // left rear
             rectangle(18, 19, 22, 23); // right rear
         }
-    }
 
+        free(braketemp0);
+        free(braketemp1);
+        free(braketemp2);
+        free(braketemp3);
+        free(tyretemp0);
+        free(tyretemp1);
+        free(tyretemp2);
+        free(tyretemp3);
+        free(tyrepressure0);
+        free(tyrepressure1);
+        free(tyrepressure2);
+        free(tyrepressure3);
+        free(tyrewear0);
+        free(tyrewear1);
+        free(tyrewear2);
+        free(tyrewear3);
+    }
+    slogt("initial diagnostics");
     {
         // window 2 session info
 
@@ -353,44 +369,44 @@ void cursescallback(uv_timer_t* handle)
         int col1gap = 3;
         int col2gap = 14;
 
-        char airtemp[6];
+        char* airtemp;
         wbkgd(win2, COLOR_PAIR(1));
         wattrset(win2, COLOR_PAIR(1));
-        snprintf(airtemp, 6, "%.0f", simdata->airtemp);
+        asprintf(&airtemp, "%.0f", simdata->airtemp);
         mvwaddnstr(win2, row, col1gap, "Air Temp:", -1);
         wattrset(win2, COLOR_PAIR(2));
         mvwaddnstr(win2, row, col1gap+col2gap, airtemp, -1);
         row++;
 
-        char airdensity[6];
+        char* airdensity;
         wbkgd(win2, COLOR_PAIR(1));
         wattrset(win2, COLOR_PAIR(1));
-        snprintf(airdensity, 6, "%.0f", simdata->airdensity);
+        asprintf(&airdensity, "%.0f", simdata->airdensity);
         mvwaddnstr(win2, row, col1gap, "Humidity:", -1);
         wattrset(win2, COLOR_PAIR(2));
         mvwaddnstr(win2, row, col1gap+col2gap, airdensity, -1);
         row++;
 
-        char tracktemp[6];
+        char* tracktemp;
         wbkgd(win2, COLOR_PAIR(1));
         wattrset(win2, COLOR_PAIR(1));
-        snprintf(tracktemp, 6, "%.0f", simdata->tracktemp);
+        asprintf(&tracktemp, "%.0f", simdata->tracktemp);
         mvwaddnstr(win2, row, col1gap, "Track Temp:", -1);
         wattrset(win2, COLOR_PAIR(2));
         mvwaddnstr(win2, row, col1gap+col2gap, tracktemp, -1);
         row++;
 
-        char numlaps[5];
+        char* numlaps;
         wbkgd(win2, COLOR_PAIR(1));
         wattrset(win2, COLOR_PAIR(1));
-        snprintf(numlaps, 6, "%.0f", simdata->numlaps);
+        asprintf(&numlaps, "%.0d", simdata->numlaps);
         mvwaddnstr(win2, row, col1gap, "Laps:", -1);
         wattrset(win2, COLOR_PAIR(2));
         mvwaddnstr(win2, row, col1gap+col2gap, numlaps, -1);
         row++;
 
 
-        char timeleft[14];
+        char* timeleft;
         int hours = simdata->timeleft/6000;
         int minutes = simdata->timeleft/60 - (hours*6000);
         int seconds = simdata->timeleft-((minutes*60)+(hours*6000));
@@ -398,12 +414,12 @@ void cursescallback(uv_timer_t* handle)
         wbkgd(win2, COLOR_PAIR(1));
         wattrset(win2, COLOR_PAIR(1));
         mvwaddnstr(win2, row, col1gap, "Time Left:", -1);
-        snprintf(timeleft, 14, "%02d:%02d:%02d\n", hours, minutes, seconds);
+        asprintf(&timeleft, "%02d:%02d:%02d\n", hours, minutes, seconds);
         wattrset(win2, COLOR_PAIR(2));
         mvwaddnstr(win2, row, col1gap+col2gap, timeleft, -1);
         row++;
 
-        char currenttime[14];
+        char* currenttime;
         hours = simdata->time/6000;
         minutes = simdata->time/60 - (hours*6000);
         seconds = simdata->time-((minutes*60)+(hours*6000));
@@ -411,12 +427,20 @@ void cursescallback(uv_timer_t* handle)
         wbkgd(win2, COLOR_PAIR(1));
         wattrset(win2, COLOR_PAIR(1));
         mvwaddnstr(win2, row, col1gap, "Current Time:", -1);
-        snprintf(currenttime, 14, "%02d:%02d:%02d\n", hours, minutes, seconds);
+        asprintf(&currenttime, "%02d:%02d:%02d\n", hours, minutes, seconds);
         wattrset(win2, COLOR_PAIR(2));
         mvwaddnstr(win2, row, col1gap+col2gap, currenttime, -1);
 
         wattrset(win2, COLOR_PAIR(1));
+
+        free(airtemp);
+        free(airdensity);
+        free(tracktemp);
+        free(numlaps);
+        free(timeleft);
+        free(currenttime);
     }
+    slogt("session info");
 
     {
         // window 3 basic timing and scoring
@@ -425,68 +449,78 @@ void cursescallback(uv_timer_t* handle)
         int col1gap = 3;
         int col2gap = 14;
 
-        char car[14];
+        char* car;
+        char* track;
+        char* driver;
+        char* lap;
+        char* position;
+        char* lastlap;
+        char* bestlap;
+
         wbkgd(win3, COLOR_PAIR(1));
         wattrset(win3, COLOR_PAIR(1));
-        snprintf(car, 14, "%s", simdata->car);
+        asprintf(&car, "%s", simdata->car);
         mvwaddnstr(win3, row, col1gap, "Car:", -1);
         wattrset(win3, COLOR_PAIR(2));
         mvwaddnstr(win3, row, col1gap+col2gap, car, -1);
         row++;
 
-        char track[14];
         wbkgd(win3, COLOR_PAIR(1));
         wattrset(win3, COLOR_PAIR(1));
-        snprintf(track, 14, "%s", simdata->track);
+        asprintf(&track, "%s", simdata->track);
         mvwaddnstr(win3, row, col1gap, "Track:", -1);
         wattrset(win3, COLOR_PAIR(2));
         mvwaddnstr(win3, row, col1gap+col2gap, track, -1);
         row++;
 
-        char driver[14];
         wbkgd(win3, COLOR_PAIR(1));
         wattrset(win3, COLOR_PAIR(1));
-        snprintf(driver, 14, "%s", simdata->driver);
+        asprintf(&driver, "%s", simdata->driver);
         mvwaddnstr(win3, row, col1gap, "Driver:", -1);
         wattrset(win3, COLOR_PAIR(2));
         mvwaddnstr(win3, row, col1gap+col2gap, driver, -1);
         row++;
 
-        char lap[4];
         wbkgd(win3, COLOR_PAIR(1));
         wattrset(win3, COLOR_PAIR(1));
-        snprintf(lap, 4, "%i", simdata->lap);
+        asprintf(&lap, "%i", simdata->lap);
         mvwaddnstr(win3, row, col1gap, "Lap:", -1);
         wattrset(win3, COLOR_PAIR(2));
         mvwaddnstr(win3, row, col1gap+col2gap, lap, -1);
         row++;
 
-        char position[4];
         wbkgd(win3, COLOR_PAIR(1));
         wattrset(win3, COLOR_PAIR(1));
-        snprintf(position, 4, "%i", simdata->position);
+        asprintf(&position, "%i", simdata->position);
         mvwaddnstr(win3, row, col1gap, "Position:", -1);
         wattrset(win3, COLOR_PAIR(2));
         mvwaddnstr(win3, row, col1gap+col2gap, position, -1);
         row++;
 
-        char lastlap[14];
         wattrset(win3, COLOR_PAIR(1));
-        snprintf(lastlap, 14, "%d:%02d:%02d\n", simdata->lastlap.minutes, simdata->lastlap.seconds, simdata->lastlap.fraction);
+        asprintf(&lastlap, "%d:%02d:%02d\n", simdata->lastlap.minutes, simdata->lastlap.seconds, simdata->lastlap.fraction);
         mvwaddnstr(win3, row, col1gap, "Last Lap:", -1);
         wattrset(win3, COLOR_PAIR(2));
         mvwaddnstr(win3, row, col1gap+col2gap, lastlap, -1);
         row++;
 
-        char bestlap[14];
         wattrset(win3, COLOR_PAIR(1));
-        snprintf(bestlap, 14, "%d:%02d:%02d\n", simdata->bestlap.minutes, simdata->bestlap.seconds, simdata->bestlap.fraction);
+        asprintf(&bestlap, "%d:%02d:%02d\n", simdata->bestlap.minutes, simdata->bestlap.seconds, simdata->bestlap.fraction);
         mvwaddnstr(win3, row, col1gap, "Best Lap:", -1);
         wattrset(win3, COLOR_PAIR(2));
         mvwaddnstr(win3, row, col1gap+col2gap, bestlap, -1);
 
         wattrset(win3, COLOR_PAIR(1));
+
+        free(car);
+        free(track);
+        free(driver);
+        free(lap);
+        free(position);
+        free(lastlap);
+        free(bestlap);
     }
+    slogt("basic timing and scoring");
 
     {
         // window 4 live standings timing and scoring
@@ -528,30 +562,30 @@ void cursescallback(uv_timer_t* handle)
             }
 
             wattrset(win4, COLOR_PAIR(2));
-            int maxstrlen = 20;
-            char pos[4];
-            char car[maxstrlen];
-            char driver[maxstrlen];
-            char lap[4];
+            int maxstrlen = 20; // can i make this depend on screen width
+            char* pos;
+            char* car;
+            char* driver;
+            char* lap;
 
-            snprintf(pos, 4, "%02d", simdata->cars[i].pos);
-            snprintf(driver, maxstrlen, "%-*.*s", maxstrlen, maxstrlen, simdata->cars[i].driver);
-            snprintf(car, maxstrlen, "%-*.*s", maxstrlen, maxstrlen, simdata->cars[i].car);
-            snprintf(lap, 4, "%i", simdata->cars[i].lap);
+            asprintf(&pos, "%02d", simdata->cars[i].pos);
+            asprintf(&driver, "%-*.*s", maxstrlen, maxstrlen, simdata->cars[i].driver);
+            asprintf(&car, "%-*.*s", maxstrlen, maxstrlen, simdata->cars[i].car);
+            asprintf(&lap, "%i", simdata->cars[i].lap);
 
-            char clastlap[14];
+            char* clastlap;
             int lastlap = simdata->cars[i].lastlap;
             int minutes = lastlap/60000;
             int seconds = lastlap/1000-(minutes*60);
             int fraction = lastlap-(minutes*60000)-(seconds*1000);
-            snprintf(clastlap, 14, "%02d:%02d:%03d", minutes, seconds, fraction);
+            asprintf(&clastlap, "%02d:%02d:%03d", minutes, seconds, fraction);
 
-            char cbestlap[14];
+            char* cbestlap;
             int bestlap = simdata->cars[i].bestlap;
             minutes = bestlap/60000;
             seconds = bestlap/1000-(minutes*60);
             fraction = bestlap-(minutes*60000)-(seconds*1000);
-            snprintf(cbestlap, 14, "%02d:%02d:%03d", minutes, seconds, fraction);
+            asprintf(&cbestlap, "%02d:%02d:%03d", minutes, seconds, fraction);
 
             mvwaddnstr(win4, row, 2, pos, -1);
             mvwaddnstr(win4, row, 7, driver, -1);
@@ -560,27 +594,35 @@ void cursescallback(uv_timer_t* handle)
             mvwaddnstr(win4, row, 56, clastlap, -1);
             mvwaddnstr(win4, row, 69, cbestlap, -1);
 
-            char pitstatus[8];
+            char* pitstatus;
             if(simdata->cars[i].inpitlane == 0 && simdata->cars[i].inpit == 0)
             {
                 wattrset(win4, COLOR_PAIR(1));
-                snprintf(pitstatus, 8, "%s", "ontrack");
+                asprintf(&pitstatus, "%s", "ontrack");
             }
             else
             {
                 if(simdata->cars[i].inpit > 0)
                 {
-                    snprintf(pitstatus, 8, "%s", "pit");
+                    asprintf(&pitstatus, "%s", "pit");
                 }
                 else
                 {
-                    snprintf(pitstatus, 8, "%s", "pitlane");
+                    asprintf(&pitstatus, "%s", "pitlane");
                 }
             }
             mvwaddnstr(win4, row, 80, pitstatus, -1);
             row++;
 
             i = ihold;
+
+            free(pos);
+            free(car);
+            free(driver);
+            free(lap);
+            free(clastlap);
+            free(cbestlap);
+            free(pitstatus);
         }
         wattrset(win4, COLOR_PAIR(1));
     }

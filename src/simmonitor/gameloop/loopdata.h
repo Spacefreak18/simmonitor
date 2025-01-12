@@ -12,6 +12,7 @@ typedef struct loop_data
 {
     uv_work_t req;
     SimulatorAPI sim;
+    SimulatorAPI mapapi;
     int numfonts;
     int numwidgets;
     bool simstate;

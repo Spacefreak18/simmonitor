@@ -131,7 +131,7 @@ enum MHD_Result ahc_echo (void* cls, struct MHD_Connection* connection, const ch
                     if (simuiwidgets[j].uiwidgetsubtype == SIMUI_TEXTWIDGET_FLAG)
                     {
                         char* txt1;
-                        asprintf(&txt1, "%i", sd->flag);
+                        asprintf(&txt1, "%i", sd->playerflag);
                         vl = TMPL_add_var(0, "datum", "flag", "data", txt1, 0);
                         free(txt1);
                         loop = TMPL_add_varlist(loop, vl);

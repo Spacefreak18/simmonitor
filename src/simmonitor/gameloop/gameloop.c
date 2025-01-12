@@ -119,7 +119,7 @@ static void on_udp_recv(uv_udp_t* handle, ssize_t nread, const uv_buf_t* rcvbuf,
 
     if (appstate == 2)
     {
-        simdatamap(simdata, simmap, NULL, f->sim, false, NULL);
+        simdatamap(simdata, simmap, NULL, f->mapapi, false, NULL);
     }
 
     if (f->simstate == false || simdata->simstatus <= 1 || appstate <= 1)
@@ -172,7 +172,7 @@ void shmdatamapcallback(uv_timer_t* handle)
     //appstate = 2;
     if (appstate == 2)
     {
-        simdatamap(simdata, simmap, NULL, f->sim, false, NULL);
+        simdatamap(simdata, simmap, NULL, f->mapapi, false, NULL);
         if (doui == true)
         {
             loopstart(sms, f, simdata);
@@ -209,7 +209,7 @@ void udpstart(SMSettings* sms, loop_data* f, SimData* simdata, SimMap* simmap)
 {
     if (appstate == 2)
     {
-        simdatamap(simdata, simmap, NULL, f->sim, true, NULL);
+        simdatamap(simdata, simmap, NULL, f->mapapi, true, NULL);
         if (doui == true)
         {
             loopstart(sms, f, simdata);
@@ -230,6 +230,7 @@ void datacheckcallback(uv_timer_t* handle)
         //TODO: move all this to a siminfo struct in loop_data
         f->simstate = si.isSimOn;
         f->sim = si.simulatorapi;
+        f->mapapi = si.mapapi;
         f->use_udp = si.SimUsesUDP;
 
         if(f->sms->force_udp_mode == true)
@@ -239,6 +240,7 @@ void datacheckcallback(uv_timer_t* handle)
     }
     if (f->simstate == true && simdata->simstatus >= 2)
     {
+        slogt("valid sim status");
         if ( appstate == 1 )
         {
             appstate++;
@@ -253,6 +255,7 @@ void datacheckcallback(uv_timer_t* handle)
             }
             else
             {
+                slogt("starting data mapping");
                 uv_timer_start(&datamaptimer, shmdatamapcallback, 2000, 16);
             }
             uv_timer_stop(handle);
@@ -310,6 +313,7 @@ void startui(UIType ui, SMSettings* sms, loop_data* f)
             fprintf(stdout, "Press c for a useful readout of car telemetry...\n");
             fprintf(stdout, "Press s for basic sesion information...\n");
             fprintf(stdout, "Press l for basic lap / stint information...\n");
+            fprintf(stdout, "Press t for tyre telemetry...\n");
             break;
         case (SIMMONITOR_CURSES):
             curses_init();
@@ -395,6 +399,11 @@ void cb(uv_poll_t* handle, int status, int events)
         loop_data* f = (loop_data*) b;
         SimData* simdata = f->simdata;
         SimMap* simmap = f->simmap;
+        if(ch == 'a')
+        {
+            fprintf(stdout, "speedx: %i speedy: %i speedz: %i\n", simdata->Xvelocity, simdata->Yvelocity, simdata->Zvelocity);
+            fflush(stdout);
+        }
         if(ch == 'c')
         {
             fprintf(stdout, "speed: %i rpms: %i gear: %i\n", simdata->velocity, simdata->rpms, simdata->gear);
@@ -402,7 +411,31 @@ void cb(uv_poll_t* handle, int status, int events)
         }
         if(ch == 's')
         {
-            fprintf(stdout, "status: %i flag: %i\n", simdata->simstatus, simdata->flag);
+            fprintf(stdout, "track: %s status: %i flag: %i airtemp: %f tracktemp: %f cars: %i\n", simdata->track, simdata->simstatus, simdata->courseflag, simdata->airtemp, simdata->tracktemp, simdata->numcars);
+            fflush(stdout);
+        }
+        if(ch == 'l')
+        {
+            char* lastlap;
+            asprintf(&lastlap, "%d:%02d:%03d", simdata->lastlap.minutes, simdata->lastlap.seconds, simdata->lastlap.fraction);
+            char* bestlap;
+            asprintf(&bestlap, "%d:%02d:%03d", simdata->bestlap.minutes, simdata->bestlap.seconds, simdata->bestlap.fraction);
+            char* curlap;
+            asprintf(&curlap, "%d:%02d:%03d", simdata->currentlap.minutes, simdata->currentlap.seconds, simdata->currentlap.fraction);
+            fprintf(stdout, "lap: %i position: %i sector: %i currentlap: %s lastlap: %s bestlap: %s\n", simdata->lap, simdata->position, simdata->sectorindex, curlap, lastlap, bestlap);
+            fflush(stdout);
+            free(curlap);
+            free(lastlap);
+            free(bestlap);
+        }
+        if(ch == 'i')
+        {
+            fprintf(stdout, "driver: %s car: %s compound: %s\n", simdata->driver, simdata->car, simdata->tyrecompound);
+            fflush(stdout);
+        }
+        if(ch == 't')
+        {
+            fprintf(stdout, "rps: %f\n", simdata->tyreRPS[0]);
             fflush(stdout);
         }
     }
@@ -493,7 +526,7 @@ int mainloop(SMSettings* sms)
 
     free(baton);
     free(simdata);
-    freesimmap(simmap);
+    freesimmap(simmap, false);
 
     return 0;
 }

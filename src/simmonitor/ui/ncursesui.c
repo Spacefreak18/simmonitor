@@ -44,16 +44,16 @@ void handle_winch(int sig)
     refresh();
 }
 
-void rectangle(int y1, int x1, int y2, int x2)
+void rectangle(WINDOW* win, int y1, int x1, int y2, int x2)
 {
-    mvhline(y1, x1, 0, x2-x1);
-    mvhline(y2, x1, 0, x2-x1);
-    mvvline(y1, x1, 0, y2-y1);
-    mvvline(y1, x2, 0, y2-y1);
-    mvaddch(y1, x1, ACS_ULCORNER);
-    mvaddch(y2, x1, ACS_LLCORNER);
-    mvaddch(y1, x2, ACS_URCORNER);
-    mvaddch(y2, x2, ACS_LRCORNER);
+    mvwhline(win, y1, x1, 0, x2-x1);
+    mvwhline(win, y2, x1, 0, x2-x1);
+    mvwvline(win, y1, x1, 0, y2-y1);
+    mvwvline(win, y1, x2, 0, y2-y1);
+    mvwaddch(win, y1, x1, ACS_ULCORNER);
+    mvwaddch(win, y2, x1, ACS_LLCORNER);
+    mvwaddch(win, y1, x2, ACS_URCORNER);
+    mvwaddch(win, y2, x2, ACS_LRCORNER);
 }
 
 int curses_init()
@@ -65,6 +65,10 @@ int curses_init()
     init_pair(2,COLOR_YELLOW,0);
     init_pair(3,COLOR_MAGENTA,0);
     init_pair(4,COLOR_WHITE,0);
+    init_pair(5,COLOR_GREEN,COLOR_GREEN);
+    init_pair(6,COLOR_YELLOW,COLOR_YELLOW);
+    init_pair(7,COLOR_RED,COLOR_RED);
+    init_pair(8,COLOR_WHITE,COLOR_BLACK);
 
     getmaxyx(stdscr, winx, winy);
     win1 = newwin(winx,winy,0,0);
@@ -159,7 +163,7 @@ void cursescallback(uv_timer_t* handle)
 
         char* gas;
         wattrset(win1, COLOR_PAIR(1));
-        asprintf(&gas, "%d", simdata->gear);
+        asprintf(&gas, "%f", simdata->gas);
         mvwaddnstr(win1, row, col1, "Gas:", -1);
         wattrset(win1, COLOR_PAIR(2));
         mvwaddnstr(win1, row, col1+col2, gas, -1);
@@ -188,6 +192,15 @@ void cursescallback(uv_timer_t* handle)
         free(gas);
         free(brake);
         free(fuel);
+
+        //flag
+        wattrset(win1, COLOR_PAIR(simdata->courseflag+5));
+        mvwhline(win1, 4, 40, 0, 20);
+        mvwhline(win1, 5, 40, 0, 20);
+        mvwhline(win1, 6, 40, 0, 20);
+        mvwhline(win1, 7, 40, 0, 20);
+        mvwhline(win1, 8, 40, 0, 20);
+        wattrset(win1, COLOR_PAIR(1));
 
         // setup tyre and brake data strings
         char* braketemp0;
@@ -338,10 +351,13 @@ void cursescallback(uv_timer_t* handle)
 
             // draw boxes to represent the tyres
             wattrset(win1, COLOR_PAIR(1));
-            rectangle(12, 13, 16, 17);  // left front
-            rectangle(12, 19, 16, 23); // right front
-            rectangle(18, 13, 22, 17);  // left rear
-            rectangle(18, 19, 22, 23); // right rear
+            rectangle(win1, 12, 13, 16, 17);  // left front
+            rectangle(win1, 12, 19, 16, 23); // right front
+            rectangle(win1, 18, 13, 22, 17);  // left rear
+            rectangle(win1, 18, 19, 22, 23); // right rear
+
+
+
         }
 
         free(braketemp0);
@@ -399,37 +415,21 @@ void cursescallback(uv_timer_t* handle)
         char* numlaps;
         wbkgd(win2, COLOR_PAIR(1));
         wattrset(win2, COLOR_PAIR(1));
-        asprintf(&numlaps, "%.0d", simdata->numlaps);
+        asprintf(&numlaps, "%i", simdata->numlaps);
         mvwaddnstr(win2, row, col1gap, "Laps:", -1);
         wattrset(win2, COLOR_PAIR(2));
         mvwaddnstr(win2, row, col1gap+col2gap, numlaps, -1);
         row++;
 
-
         char* timeleft;
-        int hours = simdata->timeleft/6000;
-        int minutes = simdata->timeleft/60 - (hours*6000);
-        int seconds = simdata->timeleft-((minutes*60)+(hours*6000));
-        //int fraction = simdata->timeleft-(minutes*60000)-(seconds*1000);
         wbkgd(win2, COLOR_PAIR(1));
         wattrset(win2, COLOR_PAIR(1));
-        mvwaddnstr(win2, row, col1gap, "Time Left:", -1);
-        asprintf(&timeleft, "%02d:%02d:%02d\n", hours, minutes, seconds);
+        mvwaddnstr(win2, row, col1gap, "Session Time:", -1);
+        asprintf(&timeleft, "%02d:%02d:%02d\n", simdata->sessiontime.hours, simdata->sessiontime.minutes, simdata->sessiontime.seconds);
         wattrset(win2, COLOR_PAIR(2));
         mvwaddnstr(win2, row, col1gap+col2gap, timeleft, -1);
         row++;
 
-        char* currenttime;
-        hours = simdata->time/6000;
-        minutes = simdata->time/60 - (hours*6000);
-        seconds = simdata->time-((minutes*60)+(hours*6000));
-        //fraction = simdata->time-(minutes*60000)-(seconds*1000);
-        wbkgd(win2, COLOR_PAIR(1));
-        wattrset(win2, COLOR_PAIR(1));
-        mvwaddnstr(win2, row, col1gap, "Current Time:", -1);
-        asprintf(&currenttime, "%02d:%02d:%02d\n", hours, minutes, seconds);
-        wattrset(win2, COLOR_PAIR(2));
-        mvwaddnstr(win2, row, col1gap+col2gap, currenttime, -1);
 
         wattrset(win2, COLOR_PAIR(1));
 
@@ -438,7 +438,6 @@ void cursescallback(uv_timer_t* handle)
         free(tracktemp);
         free(numlaps);
         free(timeleft);
-        free(currenttime);
     }
     slogt("session info");
 
@@ -498,14 +497,14 @@ void cursescallback(uv_timer_t* handle)
         row++;
 
         wattrset(win3, COLOR_PAIR(1));
-        asprintf(&lastlap, "%d:%02d:%02d\n", simdata->lastlap.minutes, simdata->lastlap.seconds, simdata->lastlap.fraction);
+        asprintf(&lastlap, "%d:%02d:%03d\n", simdata->lastlap.minutes, simdata->lastlap.seconds, simdata->lastlap.fraction);
         mvwaddnstr(win3, row, col1gap, "Last Lap:", -1);
         wattrset(win3, COLOR_PAIR(2));
         mvwaddnstr(win3, row, col1gap+col2gap, lastlap, -1);
         row++;
 
         wattrset(win3, COLOR_PAIR(1));
-        asprintf(&bestlap, "%d:%02d:%02d\n", simdata->bestlap.minutes, simdata->bestlap.seconds, simdata->bestlap.fraction);
+        asprintf(&bestlap, "%d:%02d:%03d\n", simdata->bestlap.minutes, simdata->bestlap.seconds, simdata->bestlap.fraction);
         mvwaddnstr(win3, row, col1gap, "Best Lap:", -1);
         wattrset(win3, COLOR_PAIR(2));
         mvwaddnstr(win3, row, col1gap+col2gap, bestlap, -1);
@@ -574,18 +573,9 @@ void cursescallback(uv_timer_t* handle)
             asprintf(&lap, "%i", simdata->cars[i].lap);
 
             char* clastlap;
-            int lastlap = simdata->cars[i].lastlap;
-            int minutes = lastlap/60000;
-            int seconds = lastlap/1000-(minutes*60);
-            int fraction = lastlap-(minutes*60000)-(seconds*1000);
-            asprintf(&clastlap, "%02d:%02d:%03d", minutes, seconds, fraction);
-
+            asprintf(&clastlap, "%d:%02d:%03d\n", simdata->cars[i].lastlap.minutes, simdata->cars[i].lastlap.seconds, simdata->cars[i].lastlap.fraction);
             char* cbestlap;
-            int bestlap = simdata->cars[i].bestlap;
-            minutes = bestlap/60000;
-            seconds = bestlap/1000-(minutes*60);
-            fraction = bestlap-(minutes*60000)-(seconds*1000);
-            asprintf(&cbestlap, "%02d:%02d:%03d", minutes, seconds, fraction);
+            asprintf(&cbestlap, "%d:%02d:%03d\n", simdata->cars[i].bestlap.minutes, simdata->cars[i].bestlap.seconds, simdata->cars[i].bestlap.fraction);
 
             mvwaddnstr(win4, row, 2, pos, -1);
             mvwaddnstr(win4, row, 7, driver, -1);
@@ -622,7 +612,7 @@ void cursescallback(uv_timer_t* handle)
             free(lap);
             free(clastlap);
             free(cbestlap);
-            free(pitstatus);
+            //free(pitstatus);
         }
         wattrset(win4, COLOR_PAIR(1));
     }

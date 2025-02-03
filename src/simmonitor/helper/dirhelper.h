@@ -14,4 +14,6 @@ void restrict_folders_to_cache(char* path, int cachesize);
 void delete_dir(char* path);
 bool does_file_exist(const char* file);
 
+int openFile(char* path);
+
 #endif

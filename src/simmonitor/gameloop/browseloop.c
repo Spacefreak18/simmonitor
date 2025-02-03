@@ -22,8 +22,6 @@
 #include "../helper/parameters.h"
 #include "../helper/confighelper.h"
 #include "../helper/dirhelper.h"
-#include "../simulatorapi/simapi/simapi/simdata.h"
-#include "../simulatorapi/simapi/simapi/simmapper.h"
 #include "../slog/src/slog.h"
 
 #define DEFAULT_UPDATE_RATE      60
@@ -45,14 +43,7 @@ int bwinx, bwiny;
 char blanks[1000];
 
 
-LapTime hoel_convert_to_simdata_laptime(int hoel_laptime)
-{
-    LapTime l;
-    l.minutes = hoel_laptime/60000;
-    l.seconds = hoel_laptime/1000-(l.minutes*60);
-    l.fraction = hoel_laptime-(l.minutes*60000)-(l.seconds*1000);
-    return l;
-}
+
 
 void add_line()
 {
@@ -196,6 +187,7 @@ void* browseloop(SMSettings* sms, char* datadir)
     int lapsresults = 0;
     int curresults = 0;
     int stintsid = 0;
+    int sessionobjindex = 0;
 
     StintDbo stints;
     DBField stintid;
@@ -440,7 +432,7 @@ void* browseloop(SMSettings* sms, char* datadir)
                                 wattrset(bwin1, COLOR_PAIR(5));
                                 stint_useid = sess.rows[i-1].session_id;
                                 mvwaddnstr(bwin1, 4+i, bwiny/width2, " * ", 3);
-
+                                sessionobjindex = i-1;
                             }
                             else
                             {
@@ -578,6 +570,9 @@ void* browseloop(SMSettings* sms, char* datadir)
                     }
                     break;
             }
+
+            mvwaddnstr(bwin1, bwinx-3, 0, "  Press e to enter record, b to go back. 1 and 2 to select. g to graph and p to print. Vim keys also navigate.", -1);
+            mvwaddnstr(bwin1, bwinx-2, 0, "  Vim keys also navigate. Press q to quit.", -1);
             action = 0;
         }
 
@@ -589,7 +584,7 @@ void* browseloop(SMSettings* sms, char* datadir)
         {
             go = false;
         }
-        if (ch == 'b')
+        if (ch == 'b' || ch == 'h')
         {
             switch(screen)
             {
@@ -608,7 +603,7 @@ void* browseloop(SMSettings* sms, char* datadir)
             selection = 1;
             lastselection = 1;
         }
-        if (ch == 'e')
+        if (ch == 'e' || ch == 'l')
         {
             switch(screen)
             {
@@ -628,6 +623,20 @@ void* browseloop(SMSettings* sms, char* datadir)
             selection = 1;
             lastselection = 1;
         }
+        if(ch == 'p')
+        {
+
+            if(screen == LAPS_SCREEN)
+            {
+                dumplapstofile(datadir, sess, lapsdb, lapsresults, sessionobjindex);
+
+                slogd("finished dumping data");
+                char* lapsfile;
+                asprintf(&lapsfile, "%s%s", datadir, "laps.out");
+                openFile(lapsfile);
+                free(lapsfile);
+            }
+        }
         if (ch == 'g')
         {
             //selection1 = 363;
@@ -638,7 +647,7 @@ void* browseloop(SMSettings* sms, char* datadir)
                 {
                     dumptelemetrytofile(conn, datadir, selection1, selection2);
 
-                    slogi("finished dumping data");
+                    slogd("finished dumping data");
                     size_t strsize = strlen(datadir) + strlen(sms->gnuplot_file_str) + 1;
                     char* plotfile = malloc(strsize);
                     snprintf(plotfile, strsize, "%s%s", datadir, sms->gnuplot_file_str);
@@ -646,7 +655,7 @@ void* browseloop(SMSettings* sms, char* datadir)
                     argv1[3] = plotfile;
                     argv1[4] = laptimechar1;
                     argv1[5] = laptimechar2;
-                    slogi("Using gnu plot file %s", plotfile);
+                    slogd("Using gnu plot file %s", plotfile);
                     if(!fork())
                     {
                         execv(sms->gnuplot_bin_str, argv1);
@@ -659,7 +668,7 @@ void* browseloop(SMSettings* sms, char* datadir)
             }
             action = 4;
         }
-        if (ch == 'B' || ch == 'l')
+        if (ch == 'B' || ch == 'j')
         {
             selection++;
             if (selection > curresults)
@@ -687,6 +696,7 @@ void* browseloop(SMSettings* sms, char* datadir)
         }
 
 
+
     }
 
 
@@ -699,4 +709,3 @@ void* browseloop(SMSettings* sms, char* datadir)
     h_clean_connection(conn);
 
 }
-

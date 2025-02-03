@@ -1,7 +1,10 @@
 #ifndef _TELEMETRY_H
 #define _TELEMETRY_H
 
+#include "../db/hoeldb.h"
+
 int dumptelemetrytofile(struct _h_connection* conn, char* datadir, int lap1id, int lap2id);
+int dumplapstofile(char* datadir, SessionDbo sess, LapDbo lapsdb, int numlaps, int sessidx);
 
 void print_bytes(void* ptr, int size);
 

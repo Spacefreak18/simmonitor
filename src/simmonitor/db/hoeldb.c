@@ -12,6 +12,15 @@
 #include "../helper/confighelper.h"
 #include "../slog/src/slog.h"
 
+LapTime hoel_convert_to_simdata_laptime(int hoel_laptime)
+{
+    LapTime l;
+    l.minutes = hoel_laptime/60000;
+    l.seconds = hoel_laptime/1000-(l.minutes*60);
+    l.fraction = hoel_laptime-(l.minutes*60000)-(l.seconds*1000);
+    return l;
+}
+
 int getLastInsertID(struct _h_connection* conn)
 {
     json_t* last_id = (h_last_insert_id(conn));

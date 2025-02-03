@@ -133,6 +133,8 @@ typedef struct LapDbo
 }
 LapDbo;
 
+LapTime hoel_convert_to_simdata_laptime(int hoel_laptime);
+
 int getLastInsertID(struct _h_connection* conn);
 
 void get_row_results(struct _h_result result, DBField* fields, void* rows, size_t rowsize);

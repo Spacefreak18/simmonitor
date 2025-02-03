@@ -8,8 +8,8 @@
 #include <hoel.h>
 #include <jansson.h>
 
+#include "../db/hoeldb.h"
 #include "telemetry.h"
-#include "../helper/confighelper.h"
 #include "../slog/src/slog.h"
 
 int telem_result(struct _h_result result, int doublefields, int intfields, int* intarrays, double* doublearrays)
@@ -157,6 +157,64 @@ int telem_result(struct _h_result result, int doublefields, int intfields, int* 
     }
 
     return points;
+}
+
+int dumplapstofile(char* datadir, SessionDbo sessions, LapDbo lapsdb, int numlaps, int sessidx)
+{
+
+    slogt("dumping %d laps to temp file: stint: %d", numlaps, lapsdb.rows[0].stint_id);
+
+
+    char* filename1 = "laps.out";
+    char* datafile;
+
+    asprintf(&datafile, "%s%s", datadir, filename1);
+    FILE* out = fopen(datafile, "w");
+    slogt("opend laps.out");
+    fprintf(out, "%s at %s, %s\n", sessions.rows[sessidx].car, sessions.rows[sessidx].track, sessions.rows[sessidx].start_time);
+    // easy to go back and add
+    //fprintf(out, "weather: %s, air temp: %d, track temp: %d\n", sessions.rows[sessidx].weather);
+    //fprintf(out, "tyre compound: %s\n", lapsdb.rows[0].tyre);
+    fprintf(out, "%s %s  %s  %s  %s\n", "Lap", "Sector1", "Sector2", "Sector3", "Time");
+
+    for (int i=0; i<numlaps; i++)
+    {
+        char* s1;
+        char* s2;
+        char* s3;
+        char* l;
+
+        LapTime ss1 = hoel_convert_to_simdata_laptime( lapsdb.rows[i].sector_1 );
+        asprintf(&s1, "%d:%02d:%03d", ss1.minutes, ss1.seconds, ss1.fraction);
+
+        LapTime ss2 = hoel_convert_to_simdata_laptime( lapsdb.rows[i].sector_2 );
+        asprintf(&s2, "%d:%02d:%03d", ss2.minutes, ss2.seconds, ss2.fraction);
+
+        LapTime ss3 = hoel_convert_to_simdata_laptime( lapsdb.rows[i].sector_3 );
+        asprintf(&s3, "%d:%02d:%03d", ss3.minutes, ss3.seconds, ss3.fraction);
+
+        LapTime sl = hoel_convert_to_simdata_laptime( lapsdb.rows[i].time );
+        asprintf(&l, "%d:%02d:%03d", sl.minutes, sl.seconds, sl.fraction);
+
+        if(i < 9)
+        {
+            fprintf(out, "%i   %s %s %s %s\n", i+1, s1, s2, s3, l);
+        }
+        else
+        {
+            fprintf(out, "%i  %s %s %s %s\n", i+1, s1, s2, s3, l);
+        }
+
+
+        free(s1);
+        free(s2);
+        free(s3);
+        free(l);
+    }
+    fclose(out);
+
+
+    return 0;
 }
 
 int dumptelemetrytofile(struct _h_connection* conn, char* datadir, int lap1id, int lap2id)

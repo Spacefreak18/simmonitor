@@ -289,7 +289,7 @@ void stopui(UIType ui, loop_data* f)
 
 void startdatalogger(SMSettings* sms, loop_data* f)
 {
-    if(sms->mysql == true)
+    if(sms->monitor == true)
     {
         telemetryinit(f->simdata, f->simmap, sms);
         uv_timer_start(&telemetrytimer, telemetrycallback, 0, 250);
@@ -298,7 +298,7 @@ void startdatalogger(SMSettings* sms, loop_data* f)
 
 void stopdatalogger(SMSettings* sms, loop_data* f)
 {
-    if(sms->mysql == true)
+    if(sms->monitor == true)
     {
         telemetrystop(f->simdata);
     }

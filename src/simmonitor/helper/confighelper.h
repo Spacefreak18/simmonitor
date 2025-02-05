@@ -37,7 +37,7 @@ typedef struct
 
     int gnuplotfound;
 
-    bool  mysql;
+    bool  monitor;
     bool  force_udp_mode;
     int dberr;
 

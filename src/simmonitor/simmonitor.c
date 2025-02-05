@@ -99,7 +99,7 @@ void SetSettingsFromParameters(Parameters* p, SMSettings* sms, char* configdir_s
         sms->log_filename_str = strdup("simmonitor.log");
     }
 
-    sms->mysql = p->mysql;
+    sms->monitor = p->monitor;
     sms->force_udp_mode = p->udp;
     if (p->program_action == A_PLAY)
     {
@@ -211,7 +211,7 @@ int main(int argc, char** argv)
     {
         slogd("simmonitor will display with ui type %i and config file %s", sms->ui_type, sms->uiconfig_str);
 
-        if(sms->mysql == true)
+        if(sms->monitor == true)
         {
             slogi("attempting load of db config file %s", sms->dbconfig_str);
             loaddbconfig(sms->dbconfig_str, sms);

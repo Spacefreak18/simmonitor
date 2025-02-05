@@ -34,7 +34,7 @@ typedef struct
     bool user_specified_cache_dir;
 
 
-    bool  mysql;
+    bool  monitor;
     bool  udp;
     int   verbosity_count;
     int err;

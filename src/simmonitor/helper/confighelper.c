@@ -324,7 +324,7 @@ int loaddbconfig(const char* config_file_str, SMSettings* p)
             }
         }
 
-        if (p->mysql == true || p->program_action == A_BROWSE)
+        if (p->monitor == true || p->program_action == A_BROWSE)
         {
             int err = loadconnectionconfig(&cfg, p);
             if (err != E_NO_ERROR)

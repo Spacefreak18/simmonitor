@@ -14,6 +14,7 @@ typedef struct
     int   program_state;
     char* config_dirpath;
     char* data_dirpath;
+    char* cache_dirpath;
     char* gnuplot_file;
     char* gnuplot_bin;
 
@@ -30,6 +31,7 @@ typedef struct
     bool user_specified_css_file;
     bool user_specified_config_dir;
     bool user_specified_data_dir;
+    bool user_specified_cache_dir;
 
 
     bool  mysql;

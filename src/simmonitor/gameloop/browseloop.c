@@ -101,7 +101,7 @@ int b_curses_init()
 
 
 
-void* browseloop(SMSettings* sms, char* datadir)
+void* browseloop(SMSettings* sms, char* datadir, char* cachedir)
 {
 
     struct _h_result result;
@@ -635,11 +635,11 @@ void* browseloop(SMSettings* sms, char* datadir)
 
             if(screen == LAPS_SCREEN)
             {
-                dumplapstofile(datadir, sess, lapsdb, lapsresults, sessionobjindex);
+                dumplapstofile(cachedir, sess, lapsdb, lapsresults, sessionobjindex);
 
                 slogd("finished dumping data");
                 char* lapsfile;
-                asprintf(&lapsfile, "%s%s", datadir, "laps.out");
+                asprintf(&lapsfile, "%s%s", cachedir, "laps.out");
                 openFile(lapsfile);
                 free(lapsfile);
             }
@@ -652,12 +652,11 @@ void* browseloop(SMSettings* sms, char* datadir)
             {
                 if (selection1 > 0 && selection2 > 0)
                 {
-                    dumptelemetrytofile(conn, datadir, selection1, selection2);
+                    dumptelemetrytofile(conn, cachedir, selection1, selection2);
 
                     slogd("finished dumping data");
-                    size_t strsize = strlen(datadir) + strlen(sms->gnuplot_file_str) + 1;
-                    char* plotfile = malloc(strsize);
-                    snprintf(plotfile, strsize, "%s%s", datadir, sms->gnuplot_file_str);
+                    char* plotfile;
+                    asprintf(&plotfile, "%s%s", datadir, sms->gnuplot_file_str);
                     static char* argv1[]= {"gnuplot", "-p", "-c", "plotfile.gp", "hold", "hold", NULL};
                     argv1[3] = plotfile;
                     argv1[4] = laptimechar1;
@@ -667,6 +666,7 @@ void* browseloop(SMSettings* sms, char* datadir)
                     {
                         execv(sms->gnuplot_bin_str, argv1);
                     }
+                    free(plotfile);
                 }
             }
             else

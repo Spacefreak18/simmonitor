@@ -31,6 +31,15 @@ void SetSettingsFromParameters(Parameters* p, SMSettings* sms, char* configdir_s
         sms->datadir_str = strdup(datadir_str);
     }
 
+    if(p->user_specified_cache_dir == true)
+    {
+        sms->cachedir_str = strdup(p->cache_dirpath);
+    }
+    else
+    {
+        sms->cachedir_str = strdup(cachedir_str);
+    }
+
     if(p->user_specified_dbconfig_file == true && does_file_exist(p->db_config_filepath))
     {
         sms->dbconfig_str = strdup(p->db_config_filepath);
@@ -214,7 +223,7 @@ int main(int argc, char** argv)
     else
     {
         loaddbconfig(sms->dbconfig_str, sms);
-        browseloop(sms, sms->datadir_str);
+        browseloop(sms, sms->datadir_str, sms->cachedir_str);
     }
 
 
@@ -224,4 +233,3 @@ cleanup_final:
 
     exit(0);
 }
-

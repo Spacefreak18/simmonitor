@@ -20,6 +20,10 @@ int freeparams(Parameters* p)
     {
         free(p->data_dirpath);
     }
+    if(p->cache_dirpath != NULL)
+    {
+        free(p->cache_dirpath);
+    }
     if(p->gnuplot_file != NULL)
     {
         free(p->gnuplot_file);
@@ -110,6 +114,7 @@ ConfigError getParameters(int argc, char** argv, Parameters* p)
     p->user_specified_css_file = false;
     p->user_specified_config_dir = false;
     p->user_specified_data_dir = false;
+    p->user_specified_cache_dir = false;
 
     // setup argument handling structures
     const char* progname = "SimMonitor";
@@ -126,7 +131,8 @@ ConfigError getParameters(int argc, char** argv, Parameters* p)
     struct arg_file* arg_css          = arg_filen("c", "css", "<css_file>", 0, 1, NULL);
     struct arg_file* arg_log          = arg_filen("l", "log", "<log_file>", 0, 1, NULL);
     struct arg_str* arg_userdir       = arg_strn(NULL, "userdir", "<user_dir>", 0, 1, NULL);
-    struct arg_str* arg_confdir       = arg_strn(NULL, "configdir", "config_dir>", 0, 1, NULL);
+    struct arg_str* arg_confdir       = arg_strn(NULL, "configdir", "<config_dir>", 0, 1, NULL);
+    struct arg_str* arg_cachedir      = arg_strn(NULL, "cachedir", "<cache_dir>", 0, 1, NULL);
     //struct arg_lit* arg_cli           = arg_lit0("c",  "textui", "text only ui");
     //struct arg_lit* arg_mqtt          = arg_lit0("Q",  "mqtt", "send data to local mqtt server with connection settings speciifed in config");
     struct arg_lit* arg_mysql         = arg_lit0("m",  "mysql", "send data to local mysql server with connection settings specified in config");
@@ -136,7 +142,7 @@ ConfigError getParameters(int argc, char** argv, Parameters* p)
     struct arg_lit* help1             = arg_litn(NULL,"help", 0, 1, "print this help and exit");
     struct arg_lit* vers1             = arg_litn(NULL,"version", 0, 1, "print version information and exit");
     struct arg_end* end1              = arg_end(20);
-    void* argtable0[]                 = {cmd1,arg_ui,arg_udp,arg_verbosity0,arg_mysql,arg_uiconf,arg_dbconf,arg_css,arg_log,help0,vers0,end0};
+    void* argtable0[]                 = {cmd1,arg_ui,arg_udp,arg_verbosity0,arg_mysql,arg_uiconf,arg_dbconf,arg_css,arg_log,arg_userdir,arg_confdir,arg_cachedir,help0,vers0,end0};
     void* argtable1[]                 = {cmd2,arg_verbosity1,help1,vers1,end1};
     int nerrors0;
     int nerrors1;

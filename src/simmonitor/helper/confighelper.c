@@ -30,6 +30,10 @@ int freesettings(SMSettings* sms)
     {
         free(sms->datadir_str);
     }
+    if(sms->cachedir_str != NULL)
+    {
+        free(sms->cachedir_str);
+    }
     if(sms->log_filename_str != NULL)
     {
         free(sms->log_filename_str);
@@ -444,4 +448,3 @@ int uiloadconfig(const char* config_file_str, int confignum, FontInfo* fi, SimUI
 
     return 0;
 }
-

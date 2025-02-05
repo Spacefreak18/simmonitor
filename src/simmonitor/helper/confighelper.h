@@ -28,6 +28,7 @@ typedef struct
     char* dbconfig_str;
     char* css_file_str;
     char* datadir_str;
+    char* cachedir_str;
     char* web_def_file;
     char* log_filename_str;
     char* log_dirname_str;

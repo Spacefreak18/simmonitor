@@ -119,7 +119,7 @@ void telemetryinit(SimData* SimData, SimMap* simmap, SMSettings* sms)
     stintlapid = 0;
     sessionid = 0;
 
-    sessionid = addsession(conn, eventid, carid, SimData->session, SimData->airtemp, SimData->tracktemp, SimData);
+    sessionid = addsession(conn, eventid, driverid, carid, SimData->session, SimData->airtemp, SimData->tracktemp, SimData);
     stintid = addstint(conn, sessionid, driverid, carid, SimData);
     stintlapid = addstintlap(conn, stintid, SimData);
     sessionstatus = SimData->session;
@@ -209,7 +209,7 @@ void telemetrycallback(uv_timer_t* handle)
             closesession(conn, sessionid);
             if (sessionstatus > 1)
             {
-                sessionid = addsession(conn, eventid, carid, SimData->session, SimData->airtemp, SimData->tracktemp, SimData);
+                sessionid = addsession(conn, eventid, driverid, carid, SimData->session, SimData->airtemp, SimData->tracktemp, SimData);
             }
 
             //pitstatus = 1;

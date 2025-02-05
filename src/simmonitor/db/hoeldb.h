@@ -41,6 +41,7 @@ typedef struct SessionRowData
     //int elapsed_ms;
     int laps;
     unsigned char track[150];
+    unsigned char driver[150];
     unsigned char car[150];
     PDBTimeStamp start_time;
     //char weather[100];
@@ -108,7 +109,7 @@ typedef struct SessionDbo
     int numrows;
     bool hasdata;
 
-    DBField fields[7];
+    DBField fields[8];
     SessionRowData* rows;
 }
 SessionDbo;
@@ -157,7 +158,7 @@ int adddriver(struct _h_connection* conn, int driverid, const char* drivername);
 
 int addevent(struct _h_connection* conn, int track_config);
 
-int addsession(struct _h_connection* conn, int eventid, int carid, int sessiontype, int airtemp, int tracktemp, SimData* simdata);
+int addsession(struct _h_connection* conn, int eventid, int driverid, int carid, int sessiontype, int airtemp, int tracktemp, SimData* simdata);
 
 int addstint(struct _h_connection* conn, int sessionid, int driverid, int carid, SimData* simdata);
 

@@ -51,6 +51,7 @@ DROP TABLE IF EXISTS sessions;
 CREATE TABLE IF NOT EXISTS sessions (
   session_id INTEGER PRIMARY KEY,
   event_id INT NOT NULL,
+  driver_id INT NOT NULL,
   car_id INT NOT NULL,
   session_type SMALLINT NULL,
   event_type SMALLINT NOT NULL DEFAULT 0,
@@ -227,4 +228,3 @@ CREATE TABLE IF NOT EXISTS telemetry (
 -- Insert default values
 -- -----------------------------------------------------
 INSERT INTO schemainfo VALUES ('1.0', 'simmonitor');
-

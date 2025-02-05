@@ -88,9 +88,10 @@ int getsessions(struct _h_connection* conn, const char* sessionname, SessionDbo*
     char* query;
     slogt("Performing query sessions");
 
-    asprintf(&query, "select sessions.session_id, events.event_id, sessions.event_type, table1.stints, track_config.display_name, cars.car_name, start_time "
+    asprintf(&query, "select sessions.session_id, events.event_id, sessions.event_type, table1.stints, track_config.display_name, drivers.driver_name, cars.car_name, start_time "
             "FROM %s JOIN events ON sessions.event_id=events.event_id JOIN track_config ON events.track_config_id=track_config.track_config_id "
             "JOIN cars ON sessions.car_id=cars.car_id "
+            "JOIN drivers ON sessions.driver_id=drivers.driver_id "
             "JOIN (Select session_id, COUNT(stint_id) AS stints FROM stints GROUP BY session_id) AS table1 ON table1.session_id=sessions.session_id "
             "ORDER BY sessions.session_id DESC LIMIT 25", "Sessions");
 
@@ -338,7 +339,7 @@ int addtrackconfig(struct _h_connection* conn, int trackconfigid, const char* tr
     return trackconfigid;
 }
 
-int addsession(struct _h_connection* conn, int eventid, int carid, int sessiontype, int airtemp, int tracktemp, SimData* simdata)
+int addsession(struct _h_connection* conn, int eventid, int driverid, int carid, int sessiontype, int airtemp, int tracktemp, SimData* simdata)
 {
 
 // session_id | event_id | event_type | track_time | session_name
@@ -353,6 +354,7 @@ int addsession(struct _h_connection* conn, int eventid, int carid, int sessionty
     json_t* values = json_object();
     json_object_set_new(values, "event_id", json_integer(eventid));
     json_object_set_new(values, "car_id", json_integer(carid));
+    json_object_set_new(values, "driver_id", json_integer(driverid));
     json_object_set_new(values, "session_type", json_integer(sessiontype));
     json_object_set_new(values, "duration_min", json_integer(60));
     json_object_set_new(values, "session_name", json_string("default"));

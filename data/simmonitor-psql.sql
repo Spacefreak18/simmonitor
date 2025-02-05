@@ -52,6 +52,7 @@ CREATE TABLE IF NOT EXISTS sessions (
   session_id BIGSERIAL PRIMARY KEY,
   event_id INT NOT NULL,
   car_id INT NOT NULL,
+  driver_id INT NOT NULL,
   session_type SMALLINT NULL,
   event_type SMALLINT NOT NULL DEFAULT 0,
   track_time VARCHAR(5) NULL,

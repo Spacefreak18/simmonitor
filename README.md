@@ -13,6 +13,7 @@ Customizable Simulator dashboards and telemetry data logger
 (ncurses interface ```simonitor play -u curses```)
 
 [![multiple-plots-1.png](https://i.postimg.cc/pTPCzp83/multiple-plots-1.png)](https://postimg.cc/2qXnfj0x)
+
 (sample gnuplot output of multiple laps telmetry comparison, accessed through ```simmonitor browse```)
 
 ## Suported Games

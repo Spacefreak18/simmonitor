@@ -11,13 +11,15 @@ Customizable Simulator dashboards and telemetry data logger
 
 [![gilles1.png](https://i.postimg.cc/JhgrQB8c/gilles1.png)](https://postimg.cc/ns4fFrCC)
 
+[![multiple-plots-1.png](https://i.postimg.cc/pTPCzp83/multiple-plots-1.png)](https://postimg.cc/2qXnfj0x)
+
 ## Suported Games
   - Using [SimSHMBridge](https://github.com/spacefreak18/simshmbridge)
     - Asseto Corsa
     - Assetto Corsa Competizione
     - Project Cars 2
     - Automobilista 2
-  
+
   - Using [scs-sdk-plugin](https://github.com/jackz314/scs-sdk-plugin/releases)
     - Euro Truck Simuator 2
     - American Truck Simulator
@@ -69,7 +71,7 @@ psql -d simmonitor -f data/simmonitor-psql.sql
 ```
 for postgres 15+
 ```
-GRANT pg_read_all_data TO USER;  
+GRANT pg_read_all_data TO USER;
 GRANT pg_write_all_data TO USER;
 ```
 for postgres 15 and below

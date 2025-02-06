@@ -139,17 +139,21 @@ void* browseloop(SMSettings* sms, char* datadir, char* cachedir)
     sessid.type = HOEL_COL_TYPE_INT;
     sessid.offset = 0;
     sessid.colnum = 0;
-    DBField laps;
-    laps.type = HOEL_COL_TYPE_INT;
-    laps.offset = sizeof(int);
-    laps.offset = offsetof(SessionRowData, laps);
-    laps.colnum = 1;
+    DBField stintsf;
+    stintsf.type = HOEL_COL_TYPE_INT;
+    stintsf.offset = sizeof(int);
+    stintsf.offset = offsetof(SessionRowData, stints);
+    stintsf.colnum = 1;
     DBField eventid;
     eventid.type = HOEL_COL_TYPE_INT;
     eventid.offset = offsetof(SessionRowData, event_id);
     DBField eventtype;
     eventtype.type = HOEL_COL_TYPE_INT;
     eventtype.offset = offsetof(SessionRowData, event_type);
+    DBField sim;
+    sim.type = HOEL_COL_TYPE_TEXT;
+    sim.offset = offsetof(SessionRowData, sim);
+    sim.size = sizeof(unsigned char)*150;
     DBField track;
     track.type = HOEL_COL_TYPE_TEXT;
     track.offset = offsetof(SessionRowData, track);
@@ -171,11 +175,12 @@ void* browseloop(SMSettings* sms, char* datadir, char* cachedir)
     sess.fields[0] = sessid;
     sess.fields[1] = eventid;
     sess.fields[2] = eventtype;
-    sess.fields[3] = laps;
-    sess.fields[4] = track;
-    sess.fields[5] = driver;
-    sess.fields[6] = car;
-    sess.fields[7] = starttime;
+    sess.fields[3] = stintsf;
+    sess.fields[4] = sim;
+    sess.fields[5] = track;
+    sess.fields[6] = driver;
+    sess.fields[7] = car;
+    sess.fields[8] = starttime;
     //sf.session_id = sessid;
     //sf.laps = laps;
 
@@ -354,6 +359,7 @@ void* browseloop(SMSettings* sms, char* datadir, char* cachedir)
             slogt("going to perform an action");
             int err = E_NO_ERROR;
             sessions = getsessions(conn, "Sessions", &sess);
+
             if (sessions < 0)
             {
                 go = false;
@@ -420,7 +426,7 @@ void* browseloop(SMSettings* sms, char* datadir, char* cachedir)
                             wattron(bwin1, A_BOLD);
                             mvwaddnstr(bwin1, 2, bwiny/2, "Sessions", -1);
                             mvwaddnstr(bwin1, 3, bwiny/width2, "idx", -1);
-                            mvwaddnstr(bwin1, 3, bwiny/width1+bwiny/width2, "name", -1);
+                            mvwaddnstr(bwin1, 3, bwiny/width1+bwiny/width2, "sim", -1);
                             mvwaddnstr(bwin1, 3, ((bwiny/width1)*2)+bwiny/width2, "track", -1);
                             mvwaddnstr(bwin1, 3, ((bwiny/width1)*3)+bwiny/width2, "car", -1);
                             mvwaddnstr(bwin1, 3, ((bwiny/width1)*4)+bwiny/width2, "driver", -1);
@@ -444,18 +450,22 @@ void* browseloop(SMSettings* sms, char* datadir, char* cachedir)
                             {
                                 mvwaddnstr(bwin1, 4+i, bwiny/6, "   ", 3);
                             }
+
                             char* idchar;
                             asprintf(&idchar, "%i", sess.rows[i-1].session_id);
-                            char* lapschar;
-                            asprintf(&lapschar, "%i", sess.rows[i-1].laps);
+                            char* stintschar;
+                            asprintf(&stintschar, "%i", sess.rows[i-1].stints);
 
                             mvwaddnstr(bwin1, 4+i, bwiny/width2+2, idchar, -1);
-                            mvwaddnstr(bwin1, 4+i, bwiny/width2+bwiny/width1, "my session name", -1);
+                            mvwaddnstr(bwin1, 4+i, bwiny/width2+bwiny/width1, sess.rows[i-1].sim, -1);
                             mvwaddnstr(bwin1, 4+i, bwiny/width2+((bwiny/width1)*2), sess.rows[i-1].track, -1);
                             mvwaddnstr(bwin1, 4+i, bwiny/width2+((bwiny/width1)*3), sess.rows[i-1].car, -1);
                             mvwaddnstr(bwin1, 4+i, bwiny/width2+((bwiny/width1)*4), sess.rows[i-1].driver, -1);
-                            mvwaddnstr(bwin1, 4+i, bwiny/width2+((bwiny/width1)*5), lapschar, -1);
+                            mvwaddnstr(bwin1, 4+i, bwiny/width2+((bwiny/width1)*5), stintschar, -1);
                             mvwaddnstr(bwin1, 4+i, bwiny/width2+((bwiny/width1)*6), sess.rows[i-1].start_time, -1);
+
+                            free(idchar);
+                            free(stintschar);
                         }
                         wattrset(bwin1, COLOR_PAIR(1));
                     }

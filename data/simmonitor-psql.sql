@@ -51,8 +51,9 @@ DROP TABLE IF EXISTS sessions;
 CREATE TABLE IF NOT EXISTS sessions (
   session_id BIGSERIAL PRIMARY KEY,
   event_id INT NOT NULL,
-  car_id INT NOT NULL,
+  sim_id INT NOT NULL,
   driver_id INT NOT NULL,
+  car_id INT NOT NULL,
   session_type SMALLINT NULL,
   event_type SMALLINT NOT NULL DEFAULT 0,
   track_time VARCHAR(5) NULL,
@@ -70,6 +71,15 @@ CREATE TABLE IF NOT EXISTS sessions (
   finished_at TIMESTAMP(6) NULL DEFAULT NULL,
   http_port INT NOT NULL DEFAULT 0);
 
+
+-- -----------------------------------------------------
+-- Table `sims`
+-- -----------------------------------------------------
+DROP TABLE IF EXISTS sims;
+
+CREATE TABLE IF NOT EXISTS sims (
+  sim_id BIGSERIAL PRIMARY KEY,
+  sim_name VARCHAR(150) NOT NULL DEFAULT 'Test');
 
 -- -----------------------------------------------------
 -- Table `schema_info`
@@ -227,7 +237,16 @@ CREATE TABLE IF NOT EXISTS telemetry (
 -- -----------------------------------------------------
 -- Insert default values
 -- -----------------------------------------------------
+-- schema info
 INSERT INTO schemainfo VALUES ('1.0', 'simmonitor');
+-- sims
+INSERT INTO sims VALUES (1, 'Assetto Corsa');
+INSERT INTO sims VALUES (2, 'RFactor2');
+INSERT INTO sims VALUES (3, 'Automobilista2');
+INSERT INTO sims VALUES (4, 'EuroTrucks2');
+INSERT INTO sims VALUES (5, 'AmericanTrucks2');
+INSERT INTO sims VALUES (6, 'Assetto Corsa Competizione');
+INSERT INTO sims VALUES (7, 'Assetto Corsa Evo');
 
 create function unhex(text) returns bytea language sql immutable strict as $$ select decode($1, 'hex') $$;
 create function hex(bytea) returns text language sql immutable strict as $$ select encode($1, 'hex') $$;

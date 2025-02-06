@@ -19,7 +19,6 @@ CREATE TABLE IF NOT EXISTS track_config (
   city VARCHAR(100) NULL,
   length INT NULL);
 
-
 -- -----------------------------------------------------
 -- Table `event`
 -- -----------------------------------------------------
@@ -42,7 +41,6 @@ CREATE TABLE IF NOT EXISTS events (
   race_extra_laps INT NOT NULL DEFAULT 0,
   reverse_grid_positions INT NOT NULL DEFAULT 0);
 
-
 -- -----------------------------------------------------
 -- Table `session`
 -- -----------------------------------------------------
@@ -51,6 +49,7 @@ DROP TABLE IF EXISTS sessions;
 CREATE TABLE IF NOT EXISTS sessions (
   session_id INTEGER PRIMARY KEY,
   event_id INT NOT NULL,
+  sim_id INT NOT NULL,
   driver_id INT NOT NULL,
   car_id INT NOT NULL,
   session_type SMALLINT NULL,
@@ -70,6 +69,14 @@ CREATE TABLE IF NOT EXISTS sessions (
   finished_at TIMESTAMP(6) NULL DEFAULT NULL,
   http_port INT NOT NULL DEFAULT 0);
 
+-- -----------------------------------------------------
+-- Table `sims`
+-- -----------------------------------------------------
+DROP TABLE IF EXISTS sims;
+
+CREATE TABLE IF NOT EXISTS sims (
+  sim_id INTEGER PRIMARY KEY,
+  sim_name VARCHAR(150) NOT NULL DEFAULT 'Test');
 
 -- -----------------------------------------------------
 -- Table `schema_info`
@@ -79,7 +86,6 @@ DROP TABLE IF EXISTS schemainfo;
 CREATE TABLE IF NOT EXISTS schemainfo (
   version VARCHAR(10) NOT NULL,
   game VARCHAR(10) NOT NULL);
-
 
 -- -----------------------------------------------------
 -- Table `cars`
@@ -92,8 +98,6 @@ CREATE TABLE IF NOT EXISTS cars (
   car_name VARCHAR(150) NOT NULL,
   manufacturer VARCHAR(150) NOT NULL,
   car_class VARCHAR(30) NOT NULL DEFAULT 'N/A');
-
-
 
 -- -----------------------------------------------------
 -- Table `team`
@@ -227,4 +231,13 @@ CREATE TABLE IF NOT EXISTS telemetry (
 -- -----------------------------------------------------
 -- Insert default values
 -- -----------------------------------------------------
+-- schema info
 INSERT INTO schemainfo VALUES ('1.0', 'simmonitor');
+-- sims
+INSERT INTO sims VALUES (1, 'Assetto Corsa');
+INSERT INTO sims VALUES (2, 'RFactor2');
+INSERT INTO sims VALUES (3, 'Automobilista2');
+INSERT INTO sims VALUES (4, 'EuroTrucks2');
+INSERT INTO sims VALUES (5, 'AmericanTrucks2');
+INSERT INTO sims VALUES (6, 'Assetto Corsa Competizione');
+INSERT INTO sims VALUES (7, 'Assetto Corsa Evo');

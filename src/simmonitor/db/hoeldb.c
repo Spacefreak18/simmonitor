@@ -101,7 +101,6 @@ int getsessions(struct _h_connection* conn, const char* sessionname, SessionDbo*
     {
         sess->rows = malloc(sizeof(SessionRowData) * result.nb_rows);
         get_row_results(result, sess->fields, sess->rows, sizeof(SessionRowData));
-        slogi("%s", sess->rows[0].sim);
         h_clean_result(&result);
     }
     else

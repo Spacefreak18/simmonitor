@@ -8,12 +8,12 @@ set style line 101 lc rgb 'white' lt 1 lw 1
 set border 3 front ls 101
 set nokey
 
-set xlabel 'LapTime' tc rgb 'white'
+
 set samples 10000
 #set terminal dumb size 200, 50;
 #set datafile separator ","
 
-inputfile = '~/.local/share/gilles/data.out'
+inputfile = '~/.cache/simmonitor/data.out'
 
 stats inputfile using 1 name 'POINTS'
 POINTS_range = POINTS_max - POINTS_min
@@ -126,10 +126,14 @@ set label "Brake" at POINTS_mid,25 tc rgb "white"
 set label "Accel" at POINTS_mid,32 tc rgb "white"
 set label "Steer" at POINTS_mid,38 tc rgb "white"
 
-Lap1Title = sprintf("%s%s", "Lap1: ", ARG1)
-Lap2Title = sprintf("%s%s", "Lap2: ", ARG2)
+GlobalTitle = sprintf("%s %s %s", ARG1, ARG2, ARG3)
+Lap1Title = sprintf("%s%s", "Lap1: ", ARG4)
+Lap2Title = sprintf("%s%s", "Lap2: ", ARG5)
+set label GlobalTitle at POINTS_mid,-5 tc rgb "green"
+set title GlobalTitle tc rgb 'white' noenhanced
 set label Lap1Title at POINTS_max-120,39 tc rgb "red"
 set label Lap2Title at POINTS_max-120,38 tc rgb "green"
+set xlabel 'LapTime' tc rgb 'white'
 
 plot inputfile using 1:( 0 * offsetIncrease + ($2 - SPEEDLAP1_min)   / (SPEEDLAP1_range * scalingFactor) )    w l title "speedlap1" ls 1,\
      inputfile using 1:( 0 * offsetIncrease + ($8 - SPEEDLAP2_min)   / (SPEEDLAP2_range * scalingFactor) )    w l title "speedlap2" ls 2,\
@@ -148,5 +152,5 @@ plot inputfile using 1:( 0 * offsetIncrease + ($2 - SPEEDLAP1_min)   / (SPEEDLAP
 
 set terminal postscript eps enhanced color background rgb 'black'
 #set terminal postscript eps enhanced color solid colortext 9
-set output '~/.cache/gilles/multiple_plots.eps'
+set output '~/.cache/simmonitor/multiple_plots.eps'
 replot

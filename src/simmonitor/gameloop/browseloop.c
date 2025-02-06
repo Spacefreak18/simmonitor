@@ -667,10 +667,13 @@ void* browseloop(SMSettings* sms, char* datadir, char* cachedir)
                     slogd("finished dumping data");
                     char* plotfile;
                     asprintf(&plotfile, "%s%s", datadir, sms->gnuplot_file_str);
-                    static char* argv1[]= {"gnuplot", "-p", "-c", "plotfile.gp", "hold", "hold", NULL};
+                    static char* argv1[]= {"gnuplot", "-p", "-c", "plotfile", "driver", "car", "track", "lap1", "lap2", NULL};
                     argv1[3] = plotfile;
-                    argv1[4] = laptimechar1;
-                    argv1[5] = laptimechar2;
+                    argv1[4] = (char*) sess.rows[sessionobjindex].driver;
+                    argv1[5] = (char*) sess.rows[sessionobjindex].car;
+                    argv1[6] = (char*) sess.rows[sessionobjindex].track;
+                    argv1[7] = laptimechar1;
+                    argv1[8] = laptimechar2;
                     slogd("Using gnu plot file %s", plotfile);
                     if(!fork())
                     {

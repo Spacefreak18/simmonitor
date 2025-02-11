@@ -99,6 +99,7 @@ ConfigError getParameters(int argc, char** argv, Parameters* p)
     p->udp                 = false;
     p->verbosity_count     = 0;
     p->port                = 2300;
+    p->guirate             = 60;
     p->ui_string           = NULL;
     p->db_user             = NULL;
     p->db_pass             = NULL;
@@ -127,6 +128,7 @@ ConfigError getParameters(int argc, char** argv, Parameters* p)
     struct arg_str* arg_ui            = arg_strn("u", "ui", "<ui>", 0, 1, NULL);
     struct arg_lit* arg_udp           = arg_lit0("d", "udp", "force udp mode for sims which support it");
     struct arg_int* arg_port          = arg_int0("p", "port", "<port>", "web port to listen on");
+    struct arg_int* arg_guirate       = arg_int0("r", "refresh", "<referesh_rate>", "gui refresh rate");
     struct arg_file* arg_dbconf       = arg_filen(NULL, "dbconf", "<db_config_file>", 0, 1, NULL);
     struct arg_file* arg_uiconf       = arg_filen(NULL, "uiconf", "<ui_config_file>", 0, 1, NULL);
     struct arg_file* arg_css          = arg_filen("c", "css", "<css_file>", 0, 1, NULL);
@@ -143,7 +145,7 @@ ConfigError getParameters(int argc, char** argv, Parameters* p)
     struct arg_lit* help1             = arg_litn(NULL,"help", 0, 1, "print this help and exit");
     struct arg_lit* vers1             = arg_litn(NULL,"version", 0, 1, "print version information and exit");
     struct arg_end* end1              = arg_end(20);
-    void* argtable0[]                 = {cmd1,arg_ui,arg_udp,arg_verbosity0,arg_monitor,arg_port,arg_uiconf,arg_dbconf,arg_css,arg_log,arg_userdir,arg_confdir,arg_cachedir,help0,vers0,end0};
+    void* argtable0[]                 = {cmd1,arg_ui,arg_udp,arg_verbosity0,arg_monitor,arg_port,arg_guirate,arg_uiconf,arg_dbconf,arg_css,arg_log,arg_userdir,arg_confdir,arg_cachedir,help0,vers0,end0};
     void* argtable1[]                 = {cmd2,arg_verbosity1,help1,vers1,end1};
     int nerrors0;
     int nerrors1;
@@ -184,6 +186,10 @@ ConfigError getParameters(int argc, char** argv, Parameters* p)
         if (arg_port->count > 0)
         {
             p->port = arg_port->ival[0];
+        }
+        if (arg_guirate->count > 0)
+        {
+            p->guirate = arg_guirate->ival[0];
         }
 
         if(arg_uiconf->count > 0)

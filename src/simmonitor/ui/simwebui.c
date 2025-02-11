@@ -26,6 +26,7 @@ SimUIWidget* simuiwidgets;
 char* css;
 char* js;
 char* templatefile;
+char* page;
 int fps;
 int numwidgets;
 
@@ -268,29 +269,9 @@ enum MHD_Result ahc_echo (void* cls, struct MHD_Connection* connection, const ch
             }
             else
             {
-                char* fpspart;
-                if(fps <= 0)
-                {
-                    fps = 1;
-                }
-                if(fps > 1)
-                {
-                    int num = 1000 / fps;
-                    asprintf(&fpspart, "%ims", num);
-                }
-                else
-                {
-                    int num = 1 / fps;
-                    asprintf(&fpspart, "%is", num);
-
-                }
-                char* page;
-                asprintf(&page, "%s%s%s", PAGEPART1, fpspart, PAGEPART2);
-                response = MHD_create_response_from_buffer_static (strlen (page), page);
+                response = MHD_create_response_from_buffer_static (strlen(page), page);
                 ret = MHD_queue_response (connection, MHD_HTTP_OK, response);
                 MHD_destroy_response (response);
-                free(page);
-                free(fpspart);
             }
         }
     }
@@ -307,7 +288,27 @@ int webuistart(loop_data* l)
     simuiwidgets = l->simuiwidgets;
     numwidgets = l->numwidgets;
     templatefile = l->templatefile;
-    fps = l->sms->webport;
+    fps = l->sms->refresh_rate;
+
+    char* fpspart;
+    if(fps <= 0)
+    {
+        fps = 1;
+    }
+    if(fps > 1)
+    {
+        int num = 1000 / fps;
+        asprintf(&fpspart, "%ims", num);
+    }
+    else
+    {
+        int num = 1 / fps;
+        asprintf(&fpspart, "%is", num);
+
+    }
+    size_t sz = asprintf(&page, "%s%s%s", PAGEPART1, fpspart, PAGEPART2);
+    free(fpspart);
+
     slogd("Using template file %s", templatefile);
     return 0;
 }
@@ -318,6 +319,7 @@ int webuistop(struct MHD_Daemon* d)
     sm = NULL;
     css = NULL;
     js = NULL;
+    free(page);
     MHD_stop_daemon(d);
     return 0;
 }

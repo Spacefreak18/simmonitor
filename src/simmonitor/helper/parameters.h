@@ -13,6 +13,7 @@ typedef struct
     int   program_action;
     int   program_state;
     int   port;
+    int   guirate;
     char* config_dirpath;
     char* data_dirpath;
     char* cache_dirpath;

@@ -102,6 +102,7 @@ void SetSettingsFromParameters(Parameters* p, SMSettings* sms, char* configdir_s
     sms->monitor = p->monitor;
     sms->force_udp_mode = p->udp;
     sms->webport = p->port;
+    sms->refresh_rate = p->guirate;
     if (p->program_action == A_PLAY)
     {
         sms->ui_type = SIMMONITOR_CLI;

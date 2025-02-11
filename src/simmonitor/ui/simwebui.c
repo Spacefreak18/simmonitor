@@ -10,12 +10,14 @@
 #include "../simulatorapi/simapi/simapi/simmapper.h"
 #include "../slog/src/slog.h"
 
-#define PAGE \
+#define PAGEPART1\
   "<html><head><title>simdash</title>" \
   "<script src=\"https://unpkg.com/htmx.org@2.0.1\" integrity=\"sha384-QWGpdj554B4ETpJJC9z+ZHJcA/i59TyjxEPXiiUgN2WmTyV5OEZWCD6gQhgkdpB/\" crossorigin=\"anonymous\"></script>" \
   "<link rel=\"stylesheet\" type=\"text/css\" href=\"simstyle.css\">" \
   "<script src=\"simscript.js\"></script>" \
-  "</head><body><div id=\"maindash\" hx-get=\"/simdata\" hx-trigger=\"every 7ms\" hx-swap=\"innerHTML\" hx-on::after-swap=\"simScript()\" ><p>searching for sim data</p>" \
+  "</head><body><div id=\"maindash\" hx-get=\"/simdata\" hx-trigger=\"every "
+#define PAGEPART2\
+  "\" hx-swap=\"innerHTML\" hx-on::after-swap=\"simScript()\" ><p>searching for sim data</p>" \
   "</div></body></html>"
 
 SimData* sd;
@@ -24,6 +26,7 @@ SimUIWidget* simuiwidgets;
 char* css;
 char* js;
 char* templatefile;
+int fps;
 int numwidgets;
 
 
@@ -265,9 +268,29 @@ enum MHD_Result ahc_echo (void* cls, struct MHD_Connection* connection, const ch
             }
             else
             {
-                response = MHD_create_response_from_buffer_static (strlen (PAGE), PAGE);
+                char* fpspart;
+                if(fps <= 0)
+                {
+                    fps = 1;
+                }
+                if(fps > 1)
+                {
+                    int num = 1000 / fps;
+                    asprintf(&fpspart, "%ims", num);
+                }
+                else
+                {
+                    int num = 1 / fps;
+                    asprintf(&fpspart, "%is", num);
+
+                }
+                char* page;
+                asprintf(&page, "%s%s%s", PAGEPART1, fpspart, PAGEPART2);
+                response = MHD_create_response_from_buffer_static (strlen (page), page);
                 ret = MHD_queue_response (connection, MHD_HTTP_OK, response);
                 MHD_destroy_response (response);
+                free(page);
+                free(fpspart);
             }
         }
     }
@@ -284,6 +307,7 @@ int webuistart(loop_data* l)
     simuiwidgets = l->simuiwidgets;
     numwidgets = l->numwidgets;
     templatefile = l->templatefile;
+    fps = l->sms->webport;
     slogd("Using template file %s", templatefile);
     return 0;
 }

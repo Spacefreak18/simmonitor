@@ -12,6 +12,7 @@ typedef struct
     char* ui_string;
     int   program_action;
     int   program_state;
+    int   port;
     char* config_dirpath;
     char* data_dirpath;
     char* cache_dirpath;

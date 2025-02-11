@@ -40,6 +40,7 @@ typedef struct
     bool  monitor;
     bool  force_udp_mode;
     int dberr;
+    int webport;
 
     int db_type;
     char* db_user;

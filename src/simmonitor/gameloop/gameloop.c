@@ -368,9 +368,9 @@ void startui(UIType ui, SMSettings* sms, loop_data* f)
 
             asprintf(&f->templatefile, "%s%s", rundir, "base.tmpl");
             webuistart(f);
-            slogi("starting microhttpd daemon on port 2300...");
+            slogi("starting microhttpd daemon on port %i...", sms->webport);
             d = MHD_start_daemon (MHD_USE_AUTO | MHD_USE_INTERNAL_POLLING_THREAD | MHD_USE_ERROR_LOG,
-                                  2300, NULL, NULL, &ahc_echo, NULL, MHD_OPTION_CONNECTION_TIMEOUT, (unsigned int) 120, MHD_OPTION_END);
+                                  sms->webport, NULL, NULL, &ahc_echo, NULL, MHD_OPTION_CONNECTION_TIMEOUT, (unsigned int) 120, MHD_OPTION_END);
             break;
     }
 }
@@ -530,4 +530,3 @@ int mainloop(SMSettings* sms)
 
     return 0;
 }
-

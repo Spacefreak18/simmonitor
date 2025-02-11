@@ -26,6 +26,7 @@ char* js;
 char* templatefile;
 int numwidgets;
 
+
 char *fslurp(FILE *fp)
 {
   char *answer;
@@ -205,6 +206,40 @@ enum MHD_Result ahc_echo (void* cls, struct MHD_Connection* connection, const ch
                         asprintf(&txt1, "%d:%02d:%03d\n", sd->currentlap.minutes, sd->currentlap.seconds, sd->currentlap.fraction);
                         vl = TMPL_add_var(0, "datum", "currentlap", "data", txt1, 0);
                         free(txt1);
+                        loop = TMPL_add_varlist(loop, vl);
+                    }
+                    if (simuiwidgets[j].uiwidgetsubtype == SIMUI_TEXTWIDGET_RELATIME)
+                    {
+
+                        // depend on a json library if i start making a habit of this
+                        int num_drivers = sd->numcars;
+                        char *json_string;
+                        size_t json_size = 1024;
+                        json_string = malloc(json_size);
+                        size_t offset = snprintf(json_string, json_size,"{\"track\": {\"ticks\": %i, \"distance\": %f}, \"drivers\": [",sd->tracksamples, sd->trackspline);
+                        // extra player at index 0
+                        offset += snprintf(json_string + offset, json_size - offset,"{\"driver\": \"%s\", \"lap\": %i, \"pos\": %i, \"speed\": %f},", sd->driver, sd->playerlaps, sd->playertrackpos, sd->Yvelocity);
+
+                        for (int i = 0; i < num_drivers; i++)
+                        {
+                            // Ensure the buffer is large enough to hold the new driver data
+                            int required_size = offset + strlen(sd->cars[i].driver) + 100;
+                            if (required_size > json_size)
+                            {
+                                json_size = required_size + 1024;
+                                json_string = realloc(json_string, json_size);
+                            }
+
+                            offset += snprintf(json_string + offset, json_size - offset,
+                                               "{\"driver\": \"%s\", \"lap\": %i, \"pos\": %i, \"speed\": %f}%s",
+                                               sd->cars[i].driver, sd->cars[i].lap, sd->cars[i].trackpos, sd->cars[i].speed,
+                                               (i < num_drivers - 1) ? ", " : "");
+                        }
+                        snprintf(json_string + offset, json_size - offset, "]}");
+
+                        char* txt1;
+                        vl = TMPL_add_var(0, "datum", "relatime", "data", json_string, 0);
+                        free(json_string);
                         loop = TMPL_add_varlist(loop, vl);
                     }
                 }

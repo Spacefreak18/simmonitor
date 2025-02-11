@@ -102,6 +102,12 @@ int getsubtype(char const* a)
         return SIMUI_TEXTWIDGET_RPMS;
     }
 
+    r = strcicmp("relatime", a);
+    if (r == 0)
+    {
+        return SIMUI_TEXTWIDGET_RELATIME;
+    }
+
     r = strcicmp("flag", a);
     if (r == 0)
     {

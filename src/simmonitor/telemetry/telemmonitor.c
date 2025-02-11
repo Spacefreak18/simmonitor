@@ -105,7 +105,7 @@ void telemetryinit(SimData* SimData, SimMap* simmap, SMSettings* sms)
 
     // ?? close last session
 
-    pitstatus = SimData->inpit;
+    pitstatus = SimData->cars[0].inpit;
     sessionstatus = 0;
     lastpitstatus = pitstatus;
     lastsessionstatus = 0;
@@ -119,7 +119,7 @@ void telemetryinit(SimData* SimData, SimMap* simmap, SMSettings* sms)
     stintlapid = 0;
     sessionid = 0;
 
-    sessionid = addsession(conn, eventid, SimData->sim, driverid, carid, SimData->session, SimData->airtemp, SimData->tracktemp, SimData);
+    sessionid = addsession(conn, eventid, SimData->simexe, driverid, carid, SimData->session, SimData->airtemp, SimData->tracktemp, SimData);
     stintid = addstint(conn, sessionid, driverid, carid, SimData);
     stintlapid = addstintlap(conn, stintid, SimData);
     sessionstatus = SimData->session;
@@ -209,15 +209,15 @@ void telemetrycallback(uv_timer_t* handle)
             closesession(conn, sessionid);
             if (sessionstatus > 1)
             {
-                sessionid = addsession(conn, eventid, SimData->sim, driverid, carid, SimData->session, SimData->airtemp, SimData->tracktemp, SimData);
+                sessionid = addsession(conn, eventid, SimData->simexe, driverid, carid, SimData->session, SimData->airtemp, SimData->tracktemp, SimData);
             }
 
             //pitstatus = 1;
             stintlaps = 1;
             validstintlaps = 0;
         }
-        pitstatus = SimData->inpit;
-        if (SimData->inpit == true && pitstatus != lastpitstatus)
+        pitstatus = SimData->cars[0].inpit;
+        if (pitstatus == true && pitstatus != lastpitstatus)
         {
             //pitstatus = 1;
             //}

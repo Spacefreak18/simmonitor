@@ -82,6 +82,7 @@ typedef enum
     SIMUI_TEXTWIDGET_LAP_STANDALONE             = 13,
     SIMUI_TEXTWIDGET_CURRENTLAP                 = 14,
     SIMUI_TEXTWIDGET_FLAG                       = 15,
+    SIMUI_TEXTWIDGET_RELATIME                   = 16,
 }
 SimUIWidgetSubType;
 

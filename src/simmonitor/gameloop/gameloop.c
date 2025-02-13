@@ -3,6 +3,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
+#include <libgen.h>
 #include <ncurses.h>
 #include <signal.h>
 #include <time.h>
@@ -12,6 +13,7 @@
 #include <termios.h>
 #include <hoel.h>
 #include <jansson.h>
+
 #include <uv.h>
 
 #include "gameloop.h"
@@ -336,15 +338,24 @@ void startui(UIType ui, SMSettings* sms, loop_data* f)
             }
 
             char* rundir = NULL;
-            asprintf(&rundir, "%s%s/", sms->datadir_str, "run");
+            char* rundir2 = NULL;
+            char *bname;
+            char *path2 = strdup(sms->web_def_file);
+            bname = basename(path2);
+            bname[strlen(bname)-4] = 0;
+            asprintf(&rundir, "%s%s/", sms->cachedir_str, "run");
             create_dir(rundir);
-            slogi("Using rundir %s extracting tarball %s", rundir, sms->web_def_file);
-            extract_tarball(sms->web_def_file, rundir);
+            asprintf(&rundir2, "%s%s/%s/", sms->cachedir_str, "run", bname);
+            create_dir(rundir2);
+            free(path2);
+            slogi("Using rundir %s extracting tarball %s", rundir2, sms->web_def_file);
+            extract_tarball(sms->web_def_file, rundir2);
             char* cssfilepath;
-            asprintf(&cssfilepath, "%s%s", rundir, "simstyle.css");
+            asprintf(&cssfilepath, "%s%s", rundir2, "simstyle.css");
             FILE* fb = fopen(cssfilepath, "r");
             if (fb == NULL)
             {
+                sloge("error opening %s", cssfilepath);
                 perror("Failed: ");
             }
             else
@@ -352,11 +363,13 @@ void startui(UIType ui, SMSettings* sms, loop_data* f)
                 f->css = fslurp(fb);
             }
             fclose(fb);
+            free(cssfilepath);
 
             char* jsfilepath;
-            asprintf(&jsfilepath, "%s%s", rundir, "simscript.js");
+            asprintf(&jsfilepath, "%s%s", rundir2, "simscript.js");
             FILE* fc = fopen(jsfilepath, "r");
             if (fc == NULL) {
+                sloge("error opening %s", jsfilepath);
                 perror("Failed: ");
             }
             else
@@ -366,7 +379,7 @@ void startui(UIType ui, SMSettings* sms, loop_data* f)
             fclose(fc);
             free(jsfilepath);
 
-            asprintf(&f->templatefile, "%s%s", rundir, "base.tmpl");
+            asprintf(&f->templatefile, "%s%s", rundir2, "base.tmpl");
             webuistart(f);
             slogi("starting microhttpd daemon on port %i...", sms->webport);
             d = MHD_start_daemon (MHD_USE_AUTO | MHD_USE_INTERNAL_POLLING_THREAD | MHD_USE_ERROR_LOG,

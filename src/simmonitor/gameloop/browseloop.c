@@ -547,14 +547,14 @@ void* browseloop(SMSettings* sms, char* datadir, char* cachedir)
                             //stint_useid = lapsdb.rows[i-1].rows;
                             if ( lapsdb.rows[i-1].lap_id == selection1 )
                             {
-                                mvwaddnstr(bwin1, 4+i, bwiny/7 - 4, " 1 ", 3);
+                                mvwaddnstr(bwin1, 4+i, bwiny/7 - 6, " 1 ", 3);
                                 LapTime l = hoel_convert_to_simdata_laptime( lapsdb.rows[i-1].time);
                                 snprintf(laptimechar1, 10, "%d:%02d:%03d", l.minutes, l.seconds, l.fraction);
                             }
                             else
                                 if ( lapsdb.rows[i-1].lap_id == selection2 )
                                 {
-                                    mvwaddnstr(bwin1, 4+i, bwiny/7 - 4, " 2 ", 3);
+                                    mvwaddnstr(bwin1, 4+i, bwiny/7 - 6, " 2 ", 3);
                                     LapTime l = hoel_convert_to_simdata_laptime( lapsdb.rows[i-1].time);
                                     snprintf(laptimechar2, 10, "%d:%02d:%03d", l.minutes, l.seconds, l.fraction);
                                 }

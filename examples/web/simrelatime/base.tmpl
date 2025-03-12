@@ -1,0 +1,20 @@
+<div id="driverTableWrapper" style="display: flex; flex-direction: row; align-items: center; justify-content: center;">
+    <table id="driverTable">
+        <thead>
+            <tr>
+                <th>Driver</th>
+                <th>Gap</th>
+            </tr>
+        </thead>
+        <tbody>
+            <!-- Table rows will be inserted here -->
+        </tbody>
+    </table>
+</div>
+
+<div id="grid-container">
+<TMPL_LOOP name = "myloop">
+<div id="<TMPL_VAR name="datum">" class="grid-item"><p><TMPL_VAR name="data"></p></div>
+</TMPL_LOOP>
+</div>
+

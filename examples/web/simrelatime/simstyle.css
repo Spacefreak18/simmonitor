@@ -1,0 +1,19 @@
+body {
+  background-color: #333333; /* Dark grey color */
+  color: #ffffff; /* White text for contrast */
+}
+#grid-container {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  grid-template-rows: 1fr 1fr 1fr;
+  grid-auto-flow: row;
+  column-gap: 10px;
+}
+
+#relatime {
+  visibility: hidden;
+}
+
+#flag {
+  visibility: hidden;
+}

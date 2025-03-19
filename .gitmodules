@@ -8,5 +8,5 @@
 	path = src/simmonitor/slog
   url = https://github.com/kala13x/slog
 [submodule "src/simmonitor/ui/lvgl"]
-  path = src/simmonitor/ui/lvgl
-  url = https://github.com/spacefreak18/lvgl
+	path = src/simmonitor/ui/lvgl
+	url = http://github.com/spacefreak18/lvgl

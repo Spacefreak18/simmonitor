@@ -1,15 +1,12 @@
 [submodule "src/simmonitor/simulatorapi/simapi"]
 	path = src/simmonitor/simulatorapi/simapi
 	url = https://github.com/spacefreak18/simapi
-[submodule "src/simmonitor/fbgfx"]
-	path = src/simmonitor/fbgfx
-	url = https://github.com/spacefreak18/fbgfx
 [submodule "src/simmonitor/ctemplate"]
 	path = src/simmonitor/ctemplate
 	url = https://github.com/spacefreak18/ctemplate
 [submodule "src/simmonitor/slog"]
 	path = src/simmonitor/slog
-	url = https://github.com/kala13x/slog
-[submodule "src/simmonitor/Nuklear"]
-	path = src/simmonitor/Nuklear
-	url = https://github.com/Immediate-Mode-UI/Nuklear
+  url = https://github.com/kala13x/slog
+[submodule "src/simmonitor/ui/lvgl"]
+  path = src/simmonitor/ui/lvgl
+  url = https://github.com/spacefreak18/lvgl

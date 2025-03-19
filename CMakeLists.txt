@@ -14,22 +14,19 @@ SET_SOURCE_FILES_PROPERTIES( src/simmonitor.c PROPERTIES LANGUAGE C)
 
 project(simmonitor)
 set(CMAKE_EXE_LINKER_FLAGS "-Wl,--no-as-needed -ldl")
-set(FREETYPE_INCLUDE_DIR /usr/include/freetype2)
-
-#find_package(eclipse-paho-mqtt-c REQUIRED)
 
 add_subdirectory(src/simmonitor/gameloop)
 add_subdirectory(src/simmonitor/simulatorapi)
 add_subdirectory(src/simmonitor/helper)
 add_subdirectory(src/simmonitor/slog)
-add_subdirectory(src/simmonitor/fbgfx)
+#add_subdirectory(src/simmonitor/fbgfx)
 add_subdirectory(src/simmonitor/db)
 add_subdirectory(src/simmonitor/ui)
 add_subdirectory(src/simmonitor/telemetry)
 
 add_executable(simmonitor src/simmonitor/simmonitor.c)
-target_include_directories(simmonitor PUBLIC config ${FREETYPE_INCLUDE_DIR})
-target_link_libraries(simmonitor xdg-basedir m ncursesw argtable2 config gameloop helper slog simulatorapi db ui telemetry uv hoel jansson GL GLU GLEW glfw fbgfx freetype microhttpd tar)
+target_include_directories(simmonitor PUBLIC config)
+target_link_libraries(simmonitor xdg-basedir m ncursesw argtable2 config gameloop helper slog simulatorapi db ui telemetry uv hoel jansson microhttpd tar)
 add_compile_definitions(simmonitor SIMMAP_ALL)
 
 # used for enabling additional compiler options if supported

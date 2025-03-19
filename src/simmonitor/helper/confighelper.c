@@ -86,6 +86,43 @@ int strcicmp(char const* a, char const* b)
     }
 }
 
+int getalignment(char const* a)
+{
+    int r = SIMUI_TEXTWIDGET_STATICTEXT;
+
+    r = strcicmp("center", a);
+    if (r == 0)
+    {
+        return SIMUI_WIDGETALIGN_CENTER;
+    }
+
+    r = strcicmp("topleft", a);
+    if (r == 0)
+    {
+        return SIMUI_WIDGETALIGN_TOP_LEFT;
+    }
+
+    r = strcicmp("topright", a);
+    if (r == 0)
+    {
+        return SIMUI_WIDGETALIGN_TOP_RIGHT;
+    }
+
+    r = strcicmp("bottomleft", a);
+    if (r == 0)
+    {
+        return SIMUI_WIDGETALIGN_BOTTOM_LEFT;
+    }
+
+    r = strcicmp("bottomright", a);
+    if (r == 0)
+    {
+        return SIMUI_WIDGETALIGN_BOTTOM_RIGHT;
+    }
+
+    return SIMUI_WIDGETALIGN_CENTER;
+}
+
 int getsubtype(char const* a)
 {
     int r = SIMUI_TEXTWIDGET_STATICTEXT;
@@ -402,7 +439,7 @@ int uiloadconfig(const char* config_file_str, int confignum, FontInfo* fi, SimUI
             found = config_setting_lookup_int(config_font, "size", &fi[j].size);
             // TODO: check if these are already full paths or just don't allow full paths and check multiple paths
             // better yet, find a library
-            slogi("found font %s", temp);
+            slogi("found font %s of size %i", temp, fi[j].size);
             size_t strzie = strlen(fontpath) + strlen(temp) + 1 + 1;
             char* temp2 = malloc(strzie);
             snprintf(temp2, strzie, "%s/%s", fontpath, temp);
@@ -441,12 +478,36 @@ int uiloadconfig(const char* config_file_str, int confignum, FontInfo* fi, SimUI
                 simuiwidgets[j].text = strdup(temp);
             }
 
+            found = config_setting_lookup_string(config_widget, "align", &temp);
+            if(found)
+            {
+                simuiwidgets[j].alignment = getalignment(temp);
+            }
+            else
+            {
+                simuiwidgets[j].alignment = SIMUI_WIDGETALIGN_CENTER;
+            }
+
+            simuiwidgets[j].customfont = false;
+            simuiwidgets[j].customstyle = false;
+
+            int tempint = 0;
+            found = config_setting_lookup_bool(config_widget, "customfont", &tempint);
+            if(tempint > 0)
+            {
+                simuiwidgets[j].customfont = true;
+            }
+            tempint = 0;
+            found = config_setting_lookup_bool(config_widget, "customstyle", &tempint);
+            if(tempint > 0)
+            {
+                simuiwidgets[j].customstyle = true;
+            }
+
             found = config_setting_lookup_int(config_widget, "fontid", &simuiwidgets[j].fontid);
             found = config_setting_lookup_int(config_widget, "xpos", &simuiwidgets[j].xpos);
             found = config_setting_lookup_int(config_widget, "ypos", &simuiwidgets[j].ypos);
-            found = config_setting_lookup_int(config_widget, "r", &simuiwidgets[j].red);
-            found = config_setting_lookup_int(config_widget, "g", &simuiwidgets[j].green);
-            found = config_setting_lookup_int(config_widget, "b", &simuiwidgets[j].blue);
+            found = config_setting_lookup_int(config_widget, "rgb", &simuiwidgets[j].rgb);
         }
 
     }

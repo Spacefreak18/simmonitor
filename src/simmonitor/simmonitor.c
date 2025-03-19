@@ -103,6 +103,11 @@ void SetSettingsFromParameters(Parameters* p, SMSettings* sms, char* configdir_s
     sms->force_udp_mode = p->udp;
     sms->webport = p->port;
     sms->refresh_rate = p->guirate;
+    sms->xres = p->xres;
+    sms->yres = p->yres;
+    sms->fullscreen = p->fullscreen;
+    sms->bordered = p->bordered;
+    sms->display = p->display;
     if (p->program_action == A_PLAY)
     {
         sms->ui_type = SIMMONITOR_CLI;
@@ -120,9 +125,17 @@ void SetSettingsFromParameters(Parameters* p, SMSettings* sms, char* configdir_s
             {
                 sms->ui_type = SIMMONITOR_FB;
             }
+            if (strcicmp(p->ui_string, "sdl") == 0)
+            {
+                sms->ui_type = SIMMONITOR_SDL;
+            }
             if (strcicmp(p->ui_string, "curses") == 0)
             {
                 sms->ui_type = SIMMONITOR_CURSES;
+            }
+            if (strcicmp(p->ui_string, "drm") == 0)
+            {
+                sms->ui_type = SIMMONITOR_DRM;
             }
         }
     }

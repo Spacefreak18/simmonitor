@@ -14,7 +14,9 @@ typedef enum
     SIMMONITOR_X      = 1,
     SIMMONITOR_FB     = 2,
     SIMMONITOR_WEB    = 3,
-    SIMMONITOR_CURSES = 4
+    SIMMONITOR_CURSES = 4,
+    SIMMONITOR_SDL    = 5,
+    SIMMONITOR_DRM    = 6
 }
 UIType;
 
@@ -37,11 +39,16 @@ typedef struct
 
     int gnuplotfound;
 
+    bool fullscreen;
+    bool bordered;
     bool  monitor;
     bool  force_udp_mode;
     int dberr;
     int webport;
     int refresh_rate;
+    int xres;
+    int yres;
+    int display;
 
     int db_type;
     char* db_user;
@@ -88,6 +95,16 @@ typedef enum
 }
 SimUIWidgetSubType;
 
+typedef enum
+{
+    SIMUI_WIDGETALIGN_CENTER                    = 0,
+    SIMUI_WIDGETALIGN_TOP_LEFT                  = 1,
+    SIMUI_WIDGETALIGN_TOP_RIGHT                 = 2,
+    SIMUI_WIDGETALIGN_BOTTOM_LEFT               = 3,
+    SIMUI_WIDGETALIGN_BOTTOM_RIGHT              = 4,
+}
+SimUIWidgetAlign;
+
 typedef struct
 {
     SimUIWidgetType uiwidgettype;
@@ -95,9 +112,10 @@ typedef struct
     int fontid;
     int xpos;
     int ypos;
-    int red;
-    int green;
-    int blue;
+    int rgb;
+    bool customfont;
+    bool customstyle;
+    SimUIWidgetAlign alignment;
     char* text;
     //char* name;
 }

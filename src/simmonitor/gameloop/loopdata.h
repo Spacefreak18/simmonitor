@@ -6,7 +6,7 @@
 #include "../helper/confighelper.h"
 #include "../simulatorapi/simapi/simapi/simdata.h"
 #include "../simulatorapi/simapi/simapi/simmapper.h"
-
+#include "../ui/lvhelper.h"
 
 typedef struct loop_data
 {
@@ -15,6 +15,7 @@ typedef struct loop_data
     SimulatorAPI mapapi;
     int numfonts;
     int numwidgets;
+    bool frame_lock;
     bool simstate;
     bool uion;
     bool releasing;
@@ -24,6 +25,8 @@ typedef struct loop_data
     SimMap* simmap;
     SimUIWidget* simuiwidgets;
     char* templatefile;
+    lv_font_t** simlvfonts;
+    lv_obj_t** simlvobjs;
     struct fttinfo* ft;
     FontInfo* fi;
     char* css;

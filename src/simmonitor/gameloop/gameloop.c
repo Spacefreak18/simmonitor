@@ -23,9 +23,10 @@
 #include "../telemetry/telemetry.h"
 #include "../telemetry/telemmonitor.h"
 #include "../ui/ncursesui.h"
-#include "../ui/xgui.h"
+//#include "../ui/xgui.h"
 #include "../ui/simwebui.h"
-#include "../ui/simfb.h"
+//#include "../ui/simfb.h"
+#include "../ui/lvgui.h"
 
 #include "../helper/parameters.h"
 #include "../helper/confighelper.h"
@@ -41,6 +42,7 @@ uv_timer_t datachecktimer;
 uv_timer_t datamaptimer;
 uv_timer_t cursestimer;
 uv_timer_t xtimer;
+uv_timer_t lvtimer;
 uv_timer_t fbtimer;
 uv_timer_t telemetrytimer;
 uv_udp_t recv_socket;
@@ -80,22 +82,26 @@ void loopstart(SMSettings* sms, loop_data* f, SimData* simdata)
     int fonts = 0;
     int widgets = 0;
     uiconfigcheck(sms->uiconfig_str, confignum, &fonts, &widgets);
-    slogd("loading confignum %i, with %i widgets, and %i fonts.", confignum, fonts, widgets);
+    slogd("loading confignum %i, with %i widgets, and %i fonts.", confignum, widgets, fonts);
     f->numfonts = fonts;
     f->numwidgets = widgets;
 
-    FontInfo* fi = malloc(sizeof(FontInfo) * fonts);
-    SimUIWidget* simuiwidgets = malloc(sizeof(SimUIWidget) * widgets);
-
+    FontInfo* fi = calloc(sizeof(FontInfo), fonts);
+    SimUIWidget* simuiwidgets = calloc(sizeof(SimUIWidget), widgets);
+    lv_obj_t** simlvobjs = calloc(sizeof(lv_obj_t*), 100);
+    lv_font_t** simlvfonts = calloc(sizeof(lv_font_t*), 10);
 
     uiloadconfig(sms->uiconfig_str, confignum, fi, simuiwidgets, "/usr/share/fonts/TTF", sms);
     f->simuiwidgets = simuiwidgets;
     f->fi = fi;
+    f->simlvobjs = simlvobjs;
+    f->simlvfonts = simlvfonts;
     doui = false;
     f->uion = true;
     slogd("starting ui");
     startui(sms->ui_type, sms, f);
     startdatalogger(sms, f);
+    free(f->fi);
 }
 
 void on_alloc(uv_handle_t* client, size_t suggested_size, uv_buf_t* buf) {
@@ -275,18 +281,31 @@ void stopui(UIType ui, loop_data* f)
 {
     switch (ui)
     {
-        case (SIMMONITOR_CLI):
-        case (SIMMONITOR_CURSES):
-        case (SIMMONITOR_X):
-        case (SIMMONITOR_FB):
-            break;
+
         case (SIMMONITOR_WEB):
             webuistop(d);
             free(f->css);
             free(f->js);
             free(f->templatefile);
             break;
+        case (SIMMONITOR_CLI):
+        case (SIMMONITOR_CURSES):
+            break;
+        case (SIMMONITOR_X):
+        case (SIMMONITOR_FB):
+        case (SIMMONITOR_SDL):
+        case (SIMMONITOR_DRM):
+            //sleep(1);
+            //lvclear();
+            break;
+        default:
+            break;
     }
+
+    free(f->fi);
+    free(f->simlvobjs);
+    free(f->simlvfonts);
+    free(f->simuiwidgets);
 }
 
 void startdatalogger(SMSettings* sms, loop_data* f)
@@ -322,12 +341,14 @@ void startui(UIType ui, SMSettings* sms, loop_data* f)
             uv_timer_start(&cursestimer, cursescallback, 0, 16);
             break;
         case (SIMMONITOR_X):
-            xinit();
-            uv_timer_start(&xtimer, xcallback, 0, 16);
-            break;
+        case (SIMMONITOR_SDL):
+        case (SIMMONITOR_DRM):
         case (SIMMONITOR_FB):
-            fbinit(f->fi, f->numfonts, f->numwidgets, f);
-            uv_timer_start(&fbtimer, fbcallback, 0, 16);
+            //lvgui();
+            lvclear();
+            lvinit(f->simlvobjs, f->simlvfonts, f->fi, "/usr/share/fonts/TTF", f->numfonts, sms);
+            slogi("lv ui started");
+            uv_timer_start(&lvtimer, lvcallback, 0, 16);
             break;
         case (SIMMONITOR_WEB):
 
@@ -470,6 +491,11 @@ int mainloop(SMSettings* sms)
     SimData* simdata = malloc(sizeof(SimData));
     SimMap* simmap = createSimMap();
 
+    if(sms->ui_type == SIMMONITOR_X || sms->ui_type == SIMMONITOR_FB || sms->ui_type == SIMMONITOR_SDL || sms->ui_type == SIMMONITOR_DRM)
+    {
+        lvgui(sms->ui_type, sms->xres, sms->yres, sms->display, sms->fullscreen, sms->bordered);
+    }
+
     struct termios newsettings, canonicalmode;
     tcgetattr(0, &canonicalmode);
     newsettings = canonicalmode;
@@ -477,7 +503,6 @@ int mainloop(SMSettings* sms)
     newsettings.c_cc[VMIN] = 1;
     newsettings.c_cc[VTIME] = 0;
     tcsetattr(0, TCSANOW, &newsettings);
-    char ch;
     struct pollfd mypoll = { STDIN_FILENO, POLLIN|POLLPRI };
 
     uv_poll_t* poll = (uv_poll_t*) malloc(uv_handle_size(UV_POLL));
@@ -495,6 +520,7 @@ int mainloop(SMSettings* sms)
     uv_handle_set_data((uv_handle_t*) &datamaptimer, (void*) baton);
     uv_handle_set_data((uv_handle_t*) &cursestimer, (void*) baton);
     uv_handle_set_data((uv_handle_t*) &xtimer, (void*) baton);
+    uv_handle_set_data((uv_handle_t*) &lvtimer, (void*) baton);
     uv_handle_set_data((uv_handle_t*) &fbtimer, (void*) baton);
     uv_handle_set_data((uv_handle_t*) &telemetrytimer, (void*) baton);
     uv_handle_set_data((uv_handle_t*) &recv_socket, (void*) baton);
@@ -503,6 +529,7 @@ int mainloop(SMSettings* sms)
     slogd("setting initial app state");
     uv_timer_init(uv_default_loop(), &datachecktimer);
     fprintf(stdout, "Searching for sim data... Press q to quit...\n");
+    sleep(5);
     uv_timer_start(&datachecktimer, datacheckcallback, 1000, 1000);
 
     set_simapi_log_info(simapilib_loginfo);
@@ -522,6 +549,7 @@ int mainloop(SMSettings* sms)
     uv_timer_init(uv_default_loop(), &datamaptimer);
     uv_timer_init(uv_default_loop(), &cursestimer);
     uv_timer_init(uv_default_loop(), &xtimer);
+    uv_timer_init(uv_default_loop(), &lvtimer);
     uv_timer_init(uv_default_loop(), &fbtimer);
     uv_timer_init(uv_default_loop(), &telemetrytimer);
 

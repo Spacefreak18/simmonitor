@@ -14,6 +14,9 @@ typedef struct
     int   program_state;
     int   port;
     int   guirate;
+    int   xres;
+    int   yres;
+    int   display;
     char* config_dirpath;
     char* data_dirpath;
     char* cache_dirpath;
@@ -36,6 +39,8 @@ typedef struct
     bool user_specified_cache_dir;
 
 
+    bool fullscreen;
+    bool bordered;
     bool  monitor;
     bool  udp;
     int   verbosity_count;

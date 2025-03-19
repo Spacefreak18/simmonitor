@@ -95,11 +95,16 @@ ConfigError getParameters(int argc, char** argv, Parameters* p)
 
     // set return structure defaults
     p->program_action      = 0;
-    p->monitor               = false;
+    p->monitor             = false;
     p->udp                 = false;
+    p->fullscreen          = false;
+    p->bordered            = true;
     p->verbosity_count     = 0;
+    p->display             = 0;
     p->port                = 2300;
     p->guirate             = 60;
+    p->xres                = 800;
+    p->yres                = 600;
     p->ui_string           = NULL;
     p->db_user             = NULL;
     p->db_pass             = NULL;
@@ -127,10 +132,15 @@ ConfigError getParameters(int argc, char** argv, Parameters* p)
     struct arg_rex* cmd2              = arg_rex1(NULL, NULL, "browse", NULL, REG_ICASE, NULL);
     struct arg_str* arg_ui            = arg_strn("u", "ui", "<ui>", 0, 1, NULL);
     struct arg_lit* arg_udp           = arg_lit0("d", "udp", "force udp mode for sims which support it");
+    struct arg_int* arg_display       = arg_int0("w", "display", "<display>", "display sdl window on given display index");
     struct arg_int* arg_port          = arg_int0("p", "port", "<port>", "web port to listen on");
     struct arg_int* arg_guirate       = arg_int0("r", "refresh", "<referesh_rate>", "gui refresh rate");
+    struct arg_int* arg_xres          = arg_int0("x", "xres", "<xresolution>", "horizontal resolution");
+    struct arg_int* arg_yres          = arg_int0("y", "yres", "<yresolution>", "vertical resolution");
+    struct arg_lit* arg_fullscreen    = arg_litn("f","fullscreen", 0, 1, "start fullscreen");
+    struct arg_lit* arg_borderless    = arg_litn("b","borderless", 0, 1, "start borderless");
     struct arg_file* arg_dbconf       = arg_filen(NULL, "dbconf", "<db_config_file>", 0, 1, NULL);
-    struct arg_file* arg_uiconf       = arg_filen(NULL, "uiconf", "<ui_config_file>", 0, 1, NULL);
+    struct arg_file* arg_uiconf       = arg_filen("y", "uiconf", "<ui_config_file>", 0, 1, NULL);
     struct arg_file* arg_css          = arg_filen("c", "css", "<css_file>", 0, 1, NULL);
     struct arg_file* arg_log          = arg_filen("l", "log", "<log_file>", 0, 1, NULL);
     struct arg_str* arg_userdir       = arg_strn(NULL, "userdir", "<user_dir>", 0, 1, NULL);
@@ -145,7 +155,7 @@ ConfigError getParameters(int argc, char** argv, Parameters* p)
     struct arg_lit* help1             = arg_litn(NULL,"help", 0, 1, "print this help and exit");
     struct arg_lit* vers1             = arg_litn(NULL,"version", 0, 1, "print version information and exit");
     struct arg_end* end1              = arg_end(20);
-    void* argtable0[]                 = {cmd1,arg_ui,arg_udp,arg_verbosity0,arg_monitor,arg_port,arg_guirate,arg_uiconf,arg_dbconf,arg_css,arg_log,arg_userdir,arg_confdir,arg_cachedir,help0,vers0,end0};
+    void* argtable0[]                 = {cmd1,arg_ui,arg_udp,arg_verbosity0,arg_monitor,arg_port,arg_guirate,arg_uiconf,arg_dbconf,arg_css,arg_log,arg_userdir,arg_confdir,arg_cachedir,arg_fullscreen,arg_borderless,arg_display,arg_xres,arg_yres,help0,vers0,end0};
     void* argtable1[]                 = {cmd2,arg_verbosity1,help1,vers1,end1};
     int nerrors0;
     int nerrors1;
@@ -190,6 +200,26 @@ ConfigError getParameters(int argc, char** argv, Parameters* p)
         if (arg_guirate->count > 0)
         {
             p->guirate = arg_guirate->ival[0];
+        }
+        if (arg_xres->count > 0)
+        {
+            p->xres = arg_xres->ival[0];
+        }
+        if (arg_yres->count > 0)
+        {
+            p->yres = arg_yres->ival[0];
+        }
+        if (arg_fullscreen->count > 0)
+        {
+            p->fullscreen = true;
+        }
+        if (arg_borderless->count > 0)
+        {
+            p->bordered = false;
+        }
+        if (arg_display->count > 0)
+        {
+            p->display = arg_display->ival[0];
         }
 
         if(arg_uiconf->count > 0)

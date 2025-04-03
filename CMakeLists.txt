@@ -51,6 +51,12 @@ if (MSVC) # MSVC supports different warning options to GCC/Clang
         enable_cxx_compiler_flag_if_supported("/WX")
     endif()
 else() # GCC/Clang warning option
+
+
+    if(analyze)
+        message("-- Analyzer is on")
+        target_compile_options(simmonitor PRIVATE -fanalyzer -Wno-analyzer-possible-null-argument -Wno-analyzer-possible-null-dereference)
+    endif()
     # NOTE: GCC and Clang support most of the same options, but neither supports all
     # of the others'. By only enabling them if supported, we get graceful failure
     # when trying to enable unsupported flags

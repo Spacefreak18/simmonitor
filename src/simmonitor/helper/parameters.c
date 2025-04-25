@@ -122,6 +122,18 @@ ConfigError getParameters(int argc, char** argv, Parameters* p)
     p->user_specified_data_dir = false;
     p->user_specified_cache_dir = false;
 
+    p->config_dirpath = NULL;
+    p->data_dirpath = NULL;
+    p->cache_dirpath = NULL;
+    p->ui_config_filepath = NULL;
+    p->db_config_filepath = NULL;
+    p->css_filepath = NULL;
+    p->log_filename_str = NULL;
+    p->log_fullfilename_str = NULL;
+    p->log_dirname_str = NULL;
+
+
+
     // setup argument handling structures
     const char* progname = "SimMonitor";
 

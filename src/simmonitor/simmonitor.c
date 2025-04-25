@@ -156,6 +156,7 @@ int main(int argc, char** argv)
     ConfigError ppe = getParameters(argc, argv, p);
     if (ppe == E_SUCCESS_AND_EXIT)
     {
+        freeparams(p);
         free(p);
         goto cleanup_final;
     }
@@ -165,7 +166,6 @@ int main(int argc, char** argv)
     xdgHandle xdg;
     if(!xdgInitHandle(&xdg))
     {
-        xdgWipeHandle(&xdg);
         fprintf(stderr, "Function xdgInitHandle() failed, is $HOME unset?");
         goto cleanup_final;
     }
@@ -221,10 +221,7 @@ int main(int argc, char** argv)
         slog_disable(SLOG_DEBUG);
     }
     slogi("Logging enabled");
-
     xdgWipeHandle(&xdg);
-    freeparams(p);
-    free(p);
 
     if (sms->program_action == A_PLAY)
     {
@@ -247,6 +244,11 @@ int main(int argc, char** argv)
 
 
 cleanup_final:
+
+
+    freeparams(p);
+    free(p);
+
     freesettings(sms);
     free(sms);
 

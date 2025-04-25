@@ -108,7 +108,8 @@ void SetSettingsFromParameters(Parameters* p, SMSettings* sms, char* configdir_s
     sms->fullscreen = p->fullscreen;
     sms->bordered = p->bordered;
     sms->display = p->display;
-    if (p->program_action == A_PLAY)
+    sms->program_action = p->program_action;
+    if (sms->program_action == A_PLAY)
     {
         sms->ui_type = SIMMONITOR_CLI;
         if(p->ui_string != NULL)
@@ -160,8 +161,6 @@ int main(int argc, char** argv)
         free(p);
         goto cleanup_final;
     }
-    sms->program_action = p->program_action;
-    p->program_state = 1;
 
     xdgHandle xdg;
     if(!xdgInitHandle(&xdg))

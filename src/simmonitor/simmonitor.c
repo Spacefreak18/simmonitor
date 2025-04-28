@@ -22,6 +22,14 @@
 void SetSettingsFromParameters(Parameters* p, SMSettings* sms, char* configdir_str, char* cachedir_str, char* datadir_str)
 {
 
+    sms->gnuplot_file_str = NULL;
+    sms->gnuplot_bin_str = NULL;
+    sms->db_user = NULL;
+    sms->db_pass = NULL;
+    sms->db_serv = NULL;
+    sms->db_dbnm = NULL;
+    sms->db_conn = NULL;
+
     if(p->user_specified_data_dir == true)
     {
         sms->datadir_str = strdup(p->data_dirpath);
@@ -98,6 +106,8 @@ void SetSettingsFromParameters(Parameters* p, SMSettings* sms, char* configdir_s
         sms->log_dirname_str = strdup(cachedir_str);
         sms->log_filename_str = strdup("simmonitor.log");
     }
+
+    sms->web_def_file = NULL;
 
     sms->monitor = p->monitor;
     sms->force_udp_mode = p->udp;

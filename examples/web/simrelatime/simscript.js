@@ -20,7 +20,7 @@ function simScript() {
     behindDrivers.unshift(...sortedDrivers.slice(sortedDrivers.length - neededDrivers));
 
     /** drivers ahead array **/
-    aheadDrivers = sortedDrivers.slice(Math.min( (playerIdx + 1), (sortedDrivers.length - 1) ), Math.min( (playerIdx + 4), (sortedDrivers.length - 1) ));
+    aheadDrivers = sortedDrivers.slice(Math.min( (playerIdx + 1), (sortedDrivers.length) ), Math.min( (playerIdx + 4), (sortedDrivers.length) ));
     neededDrivers = 3 - aheadDrivers.length;
     aheadDrivers.push(...sortedDrivers.slice(0, neededDrivers + 1));
 

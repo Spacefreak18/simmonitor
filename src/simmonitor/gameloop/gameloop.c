@@ -101,7 +101,7 @@ void loopstart(SMSettings* sms, loop_data* f, SimData* simdata)
     slogd("starting ui");
     startui(sms->ui_type, sms, f);
     startdatalogger(sms, f);
-    free(f->fi);
+    //free(f->fi);
 }
 
 void on_alloc(uv_handle_t* client, size_t suggested_size, uv_buf_t* buf) {

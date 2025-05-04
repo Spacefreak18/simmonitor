@@ -8,7 +8,6 @@
 #include <signal.h>
 #include <time.h>
 #include <sys/time.h>
-#include <MQTTClient.h>
 #include <poll.h>
 #include <termios.h>
 #include <hoel.h>

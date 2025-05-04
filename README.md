@@ -49,6 +49,11 @@ Customizable Simulator dashboards and telemetry data logger
 - [simshmbridge](https://github.com/spacefreak18/simshmbridge)
 - [simapi](https://github.com/spacefreak18/simapi)
 
+Arch Linux Dependencies
+```
+pacman -Syu libxdg-basedir argtable libconfig ncurses libmicrohttpd libuv hoel sdl2 sdl2_image libtar postgresql mariadb sqlite3
+```
+
 ## Building
 
 This code depends on the shared memory data headers in the simapi [repo](https://github.com/spacefreak18/simapi). When pulling lastest if the submodule does not download run:

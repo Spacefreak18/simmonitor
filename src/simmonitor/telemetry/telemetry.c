@@ -322,9 +322,9 @@ int dumptelemetrytofile(struct _h_connection* conn, char* datadir, int lap1id, i
                 gear2 = lastgear2;
             }
         }
-        fprintf(out, "%i %i %i %i %f %f %f", i+1, intarrays1[i], intarrays1[i+points], gear1, doublearrays1[i], doublearrays1[i+points], doublearrays1[i+(points*2)]);
+        fprintf(out, "%i %i %i %i %f %f %f", i+1, intarrays1[i], intarrays1[i+points], gear1-1, doublearrays1[i], doublearrays1[i+points], doublearrays1[i+(points*2)]);
         // make sure there is an extra space at the beginning of this
-        fprintf(out, " %i %i %i %f %f %f\n", intarrays2[i], intarrays2[i+points], gear2, doublearrays2[i], doublearrays2[i+points], doublearrays2[i+(points*2)]);
+        fprintf(out, " %i %i %i %f %f %f\n", intarrays2[i], intarrays2[i+points], gear2-1, doublearrays2[i], doublearrays2[i+points], doublearrays2[i+(points*2)]);
         lastgear1 = gear1;
         lastgear2 = gear2;
     }

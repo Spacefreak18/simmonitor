@@ -1,6 +1,5 @@
-
 # minimum CMake version required for C++20 support, among other things
-cmake_minimum_required(VERSION 3.15)
+cmake_minimum_required(VERSION 3.5)
 
 # detect if simmonitor is being used as a sub-project of another CMake project
 if(NOT DEFINED PROJECT_NAME)
@@ -11,6 +10,7 @@ endif()
 
 SET_SOURCE_FILES_PROPERTIES( src/simmonitor.c PROPERTIES LANGUAGE C)
 #set(CMAKE_BUILD_TYPE Debug)
+set(CMAKE_POLICY_VERSION_MINIMUM 3.5)
 
 project(simmonitor)
 set(CMAKE_EXE_LINKER_FLAGS "-Wl,--no-as-needed -ldl")

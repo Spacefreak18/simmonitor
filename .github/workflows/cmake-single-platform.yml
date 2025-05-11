@@ -23,7 +23,7 @@ jobs:
     - uses: actions/checkout@v4
     - name: Install dependencies
       run: |
-        sudo apt-get install libsdl2-image-dev
+        sudo apt-get install libsdl2-image-dev libhoel-dev libxdg-basedir-dev libargtable2-dev libconfig-dev libncurses-dev libtar-dev 
 
     - name: Configure CMake
       # Configure CMake in a 'build' subdirectory. `CMAKE_BUILD_TYPE` is only required if you are using a single-configuration generator such as make.

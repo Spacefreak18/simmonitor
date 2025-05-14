@@ -137,6 +137,7 @@ static void on_udp_recv(uv_udp_t* handle, ssize_t nread, const uv_buf_t* rcvbuf,
             f->uion = false;
             slogi("stopped mapping data, press q again to quit");
             stopdatalogger(sms, f);
+            sleep(2);
             stopui(sms->ui_type, f);
             // free loop data
             uv_udp_recv_stop(handle);
@@ -321,6 +322,7 @@ void stopdatalogger(SMSettings* sms, loop_data* f)
     if(sms->monitor == true)
     {
         telemetrystop(f->simdata);
+        uv_timer_stop(&telemetrytimer);
     }
 }
 

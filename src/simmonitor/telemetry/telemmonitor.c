@@ -131,7 +131,8 @@ void telemetryinit(SimData* SimData, SimMap* simmap, SMSettings* sms)
     tick = 0;
 
 
-    track_samples = SimData->trackspline / TRACK_SAMPLE_RATE;
+    //track_samples = SimData->trackspline * TRACK_SAMPLE_RATE;
+    track_samples = SimData->tracksamples;
     slogt("track samples %i", track_samples);
 
     stintlaps = 1;
@@ -157,7 +158,7 @@ void telemetrycallback(uv_timer_t* handle)
     loop_data* f = (loop_data*) b;
     SimData* SimData = f->simdata;
     SimMap* simmap = f->simmap;
-    int pos = (int) track_samples* SimData->playerspline;
+    int pos = (int) track_samples * SimData->playerspline;
     slogt("tick %i pos %f normpos %i of samples %i", tick, SimData->playerspline, pos, track_samples);
 
     steerdata[pos] = SimData->steer;
@@ -187,10 +188,10 @@ void telemetrycallback(uv_timer_t* handle)
     {
         maxspeed = speeddata[pos];
     }
-    avgspeed += speeddata[pos] / track_samples;
+    avgspeed += (double) speeddata[pos];;
 
-    slogt("speed %i rpms %i gear %i steer %f gas %f brake %f", speeddata[pos], rpmdata[pos], geardata[pos], steerdata[pos],
-          acceldata[pos], brakedata[pos]);
+    slogt("speed %i rpms %i gear %i steer %f gas %f brake %f avgspeed %f", speeddata[pos], rpmdata[pos], geardata[pos], steerdata[pos],
+          acceldata[pos], brakedata[pos], avgspeed);
 
     sessionstatus = SimData->session;
     lap = SimData->lap;
@@ -216,6 +217,7 @@ void telemetrycallback(uv_timer_t* handle)
             stintlaps = 1;
             validstintlaps = 0;
         }
+
         pitstatus = SimData->cars[0].inpit;
         if (pitstatus == true && pitstatus != lastpitstatus)
         {
@@ -230,6 +232,7 @@ void telemetrycallback(uv_timer_t* handle)
             stintlaps = 1;
             validstintlaps = 0;
         }
+
         if (lap != lastlap)
         {
             slogt("New lap detected");
@@ -239,18 +242,24 @@ void telemetrycallback(uv_timer_t* handle)
                 validstintlaps++;
             }
 
-            closelap(conn, stintlapid, sectortimes[1], sectortimes[2], SimData->lastsectorinms, 0, 0, maxspeed, avgspeed, SimData);
+            avgspeed = avgspeed / tick;
+            closelap(conn, stintlapid, stintid, sectortimes[1], sectortimes[2], SimData->lastsectorinms, 0, 0, maxspeed, avgspeed, SimData);
+            // pit status check should be here
+            // if car is in pit close previous stint and start a new one
 
             int telemid = addtelemetry(conn, track_samples, stintlapid);
             int b = updatetelemetrydata(conn, track_samples, telemid, stintlapid, speeddata, rpmdata, geardata, steerdata, acceldata, brakedata);
 
-            stintlapid = addstintlap(conn, stintid, SimData);
 
+
+
+            // reset tracking variables
+            validind = true; // assume lap is valid until it isn't
             maxspeed = 0;
             avgspeed = 0;
             tick = 0;
-            // assume lap is valid until it isn't
-            validind = true;
+
+            stintlapid = addstintlap(conn, stintid, SimData);
             speeddata = calloc(track_samples, sizeof(SimData->velocity));
             rpmdata = calloc(track_samples, sizeof(SimData->rpms));
             geardata = calloc(track_samples, sizeof(SimData->gear));
@@ -281,7 +290,7 @@ void telemetrystop(SimData* SimData)
     slogd("telemetry stop signal");
     int telemid = addtelemetry(conn, track_samples, stintlapid);
     int b = updatetelemetrydata(conn, track_samples, telemid, stintlapid, speeddata, rpmdata, geardata, steerdata, acceldata, brakedata);
-    closelap(conn, stintlapid, sectortimes[1], sectortimes[2], SimData->lastsectorinms, 0, 0, 0, 0, SimData);
+    closelap(conn, stintlapid, stintid, sectortimes[1], sectortimes[2], SimData->lastsectorinms, 0, 0, 0, 0, SimData);
     closestint(conn, stintid, stintlaps, validstintlaps);
     closesession(conn, sessionid);
 

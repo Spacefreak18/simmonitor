@@ -271,10 +271,10 @@ void* browseloop(SMSettings* sms, char* datadir, char* cachedir)
     carcrashes.type = HOEL_COL_TYPE_INT;
     carcrashes.offset = offsetof(LapRowData, crashes);
     DBField maxspeed;
-    maxspeed.type = HOEL_COL_TYPE_DOUBLE;
+    maxspeed.type = HOEL_COL_TYPE_INT;
     maxspeed.offset = offsetof(LapRowData, max_speed);
     DBField avgspeed;
-    avgspeed.type = HOEL_COL_TYPE_DOUBLE;
+    avgspeed.type = HOEL_COL_TYPE_INT;
     avgspeed.offset = offsetof(LapRowData, avg_speed);
     DBField f_tyre_temp;
     f_tyre_temp.type = HOEL_COL_TYPE_DOUBLE;
@@ -523,7 +523,7 @@ void* browseloop(SMSettings* sms, char* datadir, char* cachedir)
                     for(int i=0; i<lapsresults+1; i++)
                     {
 
-                        int displaycolumns = 5;
+                        int displaycolumns = 6;
                         int width1 = displaycolumns + 1;
                         int width2 = displaycolumns * 2;
                         if (i == 0)
@@ -536,6 +536,7 @@ void* browseloop(SMSettings* sms, char* datadir, char* cachedir)
                             mvwaddnstr(bwin1, 3, ((bwiny/width1)*2)+bwiny/width2, "tyre", -1);
                             mvwaddnstr(bwin1, 3, ((bwiny/width1)*3)+bwiny/width2, "laptime", -1);
                             mvwaddnstr(bwin1, 3, ((bwiny/width1)*4)+bwiny/width2, "maxspeed", -1);
+                            mvwaddnstr(bwin1, 3, ((bwiny/width1)*5)+bwiny/width2, "avgspeed", -1);
                             mvwhline(bwin1, 4, 0, 0, bwiny);
                             wattroff(bwin1, A_BOLD);
                             wattrset(bwin1, COLOR_PAIR(1));
@@ -568,19 +569,27 @@ void* browseloop(SMSettings* sms, char* datadir, char* cachedir)
                                 mvwaddnstr(bwin1, 4+i, bwiny/7, "   ", 3);
 
                             }
-                            char idchar[4];
-                            snprintf(idchar, 4, "%i", lapsdb.rows[i-1].lap_id);
-                            char maxspeedchar[4];
-                            snprintf(maxspeedchar, 4, "%f", lapsdb.rows[i-1].max_speed);
+                            char* idchar;
+                            asprintf(&idchar, "%i", lapsdb.rows[i-1].lap_id);
+                            char* maxspeedchar;
+                            asprintf(&maxspeedchar, "%i", lapsdb.rows[i-1].max_speed);
+                            char* avgspeedchar;
+                            asprintf(&avgspeedchar, "%i", lapsdb.rows[i-1].avg_speed);
                             LapTime l = hoel_convert_to_simdata_laptime( lapsdb.rows[i-1].time);
-                            char laptimechar[10];
-                            snprintf(laptimechar, 10, "%d:%02d:%03d", l.minutes, l.seconds, l.fraction);
+                            char* laptimechar;
+                            asprintf(&laptimechar, "%d:%02d:%03d", l.minutes, l.seconds, l.fraction);
 
                             mvwaddnstr(bwin1, 4+i, bwiny/width2+2, idchar, -1);
                             mvwaddnstr(bwin1, 4+i, bwiny/width2+bwiny/width1, "my session name", -1);
                             mvwaddnstr(bwin1, 4+i, bwiny/width2+((bwiny/width1)*2), lapsdb.rows[i-1].tyre, -1);
                             mvwaddnstr(bwin1, 4+i, bwiny/width2+((bwiny/width1)*3), laptimechar, -1);
                             mvwaddnstr(bwin1, 4+i, bwiny/width2+((bwiny/width1)*4), maxspeedchar, -1);
+                            mvwaddnstr(bwin1, 4+i, bwiny/width2+((bwiny/width1)*5), avgspeedchar, -1);
+
+                            free(idchar);
+                            free(maxspeedchar);
+                            free(avgspeedchar);
+                            free(laptimechar);
                         }
                         wattrset(bwin1, COLOR_PAIR(1));
 

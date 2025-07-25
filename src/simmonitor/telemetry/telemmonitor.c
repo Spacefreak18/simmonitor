@@ -26,9 +26,11 @@ int lastpitstatus = 0;
 int lastsessionstatus = 0;
 int lap = 0;
 int lastlap = 0;
+int midlap = 0;
 int sector = 0;
 int lastsector = 0;
 int lastpos = 0;
+int chequeredflag = 0;
 
 int eventid;
 int driverid;
@@ -81,7 +83,7 @@ void telemetryinit(SimData* SimData, SimMap* simmap, SMSettings* sms)
     }
     slogi("Starting telemetry");
 
-    slogt("Getting track config");
+    slogt("Getting track config for track %s", SimData->track);
     int trackconfig = gettrack(conn, SimData->track);
     if (trackconfig == -1)
     {
@@ -167,7 +169,10 @@ void telemetrycallback(uv_timer_t* handle)
     speeddata[pos] = SimData->velocity;
     rpmdata[pos] = SimData->rpms;
     geardata[pos] = SimData->gear;
-
+    if(SimData->playerflag == SIMAPI_FLAG_CHEQUERED || SimData->courseflag == SIMAPI_FLAG_CHEQUERED)
+    {
+        chequeredflag = 1;
+    }
 
     if(lastpos < pos-1)
     {
@@ -188,17 +193,20 @@ void telemetrycallback(uv_timer_t* handle)
     {
         maxspeed = speeddata[pos];
     }
-    avgspeed += (double) speeddata[pos];;
 
-    slogt("speed %i rpms %i gear %i steer %f gas %f brake %f avgspeed %f", speeddata[pos], rpmdata[pos], geardata[pos], steerdata[pos],
-          acceldata[pos], brakedata[pos], avgspeed);
-
-    sessionstatus = SimData->session;
-    lap = SimData->lap;
-    sector = SimData->sectorindex;
     // in case you are in the middle of an execution and the sim has stopped
-    if (SimData->simstatus == 2)
+    if ((SimData->simstatus == 2 && chequeredflag == 0) || midlap == 1)
     {
+        avgspeed += (double) speeddata[pos];;
+
+        slogt("speed %i rpms %i gear %i steer %f gas %f brake %f avgspeed %f", speeddata[pos], rpmdata[pos], geardata[pos], steerdata[pos],
+              acceldata[pos], brakedata[pos], avgspeed);
+
+        sessionstatus = SimData->session;
+        lap = SimData->lap;
+        sector = SimData->sectorindex;
+
+
         if (SimData->lapisvalid == false && validind == true)
         {
             validind = false;
@@ -208,8 +216,9 @@ void telemetrycallback(uv_timer_t* handle)
         {
             closestint(conn, stintid, stintlaps, validstintlaps);
             closesession(conn, sessionid);
-            if (sessionstatus > 1)
+            if(SimData->simstatus == 2 && chequeredflag == 0 && SimData->session > 1)
             {
+                slogd("Adding new session");
                 sessionid = addsession(conn, eventid, SimData->simexe, driverid, carid, SimData->session, SimData->airtemp, SimData->tracktemp, SimData);
             }
 
@@ -228,15 +237,24 @@ void telemetrycallback(uv_timer_t* handle)
             // close last stint
 
             closestint(conn, stintid, stintlaps, validstintlaps);
-            stintid = addstint(conn, sessionid, driverid, carid, SimData);
+            if(SimData->simstatus == 2 && chequeredflag == 0)
+            {
+                slogd("Adding new stint");
+                stintid = addstint(conn, sessionid, driverid, carid, SimData);
+            }
             stintlaps = 1;
             validstintlaps = 0;
         }
 
         if (lap != lastlap)
         {
-            slogt("New lap detected");
-            stintlaps++;
+            slogd("New lap detected");
+
+            midlap = 0;
+            if(SimData->simstatus == 2 && chequeredflag == 0)
+            {
+                midlap = 1;
+            }
             if (validind == true)
             {
                 validstintlaps++;
@@ -249,6 +267,12 @@ void telemetrycallback(uv_timer_t* handle)
 
             int telemid = addtelemetry(conn, track_samples, stintlapid);
             int b = updatetelemetrydata(conn, track_samples, telemid, stintlapid, speeddata, rpmdata, geardata, steerdata, acceldata, brakedata);
+            if(SimData->simstatus == 2 && chequeredflag == 0)
+            {
+                slogd("Starting new lap");
+                stintlaps++;
+                stintlapid = addstintlap(conn, stintid, SimData);
+            }
 
 
 
@@ -259,7 +283,7 @@ void telemetrycallback(uv_timer_t* handle)
             avgspeed = 0;
             tick = 0;
 
-            stintlapid = addstintlap(conn, stintid, SimData);
+
             speeddata = calloc(track_samples, sizeof(SimData->velocity));
             rpmdata = calloc(track_samples, sizeof(SimData->rpms));
             geardata = calloc(track_samples, sizeof(SimData->gear));
@@ -287,10 +311,11 @@ void telemetrycallback(uv_timer_t* handle)
 void telemetrystop(SimData* SimData)
 {
 
-    slogd("telemetry stop signal");
-    int telemid = addtelemetry(conn, track_samples, stintlapid);
-    int b = updatetelemetrydata(conn, track_samples, telemid, stintlapid, speeddata, rpmdata, geardata, steerdata, acceldata, brakedata);
-    closelap(conn, stintlapid, stintid, sectortimes[1], sectortimes[2], SimData->lastsectorinms, 0, 0, 0, 0, SimData);
+    slogd("telemetry stop signal current lapid %i current stintid %i current sessionid %i", stintlapid, stintid, sessionid);
+    //int telemid = addtelemetry(conn, track_samples, stintlapid);
+    //int b = updatetelemetrydata(conn, track_samples, telemid, stintlapid, speeddata, rpmdata, geardata, steerdata, acceldata, brakedata);
+    //avgspeed = avgspeed / tick;
+    //closelap(conn, stintlapid, stintid, sectortimes[1], sectortimes[2], SimData->lastsectorinms, 0, 0, maxspeed, avgspeed, SimData);
     closestint(conn, stintid, stintlaps, validstintlaps);
     closesession(conn, sessionid);
 

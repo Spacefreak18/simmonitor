@@ -373,8 +373,8 @@ int addsession(struct _h_connection* conn, int eventid, int simid, int driverid,
 
     if (res != 0)
     {
-        sloge("track config insert result %i", res);
-        sloge("track config query %s", qq);
+        sloge("add session insert result %i", res);
+        sloge("add session insert query %s", qq);
         return -1;
     }
 

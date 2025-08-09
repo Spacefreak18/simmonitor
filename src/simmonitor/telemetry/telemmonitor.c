@@ -121,6 +121,7 @@ void telemetryinit(SimData* SimData, SimMap* simmap, SMSettings* sms)
     stintlapid = 0;
     sessionid = 0;
 
+    slogt("Starting session with sim exe %i", SimData->simexe);
     sessionid = addsession(conn, eventid, SimData->simexe, driverid, carid, SimData->session, SimData->airtemp, SimData->tracktemp, SimData);
     stintid = addstint(conn, sessionid, driverid, carid, SimData);
     stintlapid = addstintlap(conn, stintid, SimData);

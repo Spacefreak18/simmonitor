@@ -3,11 +3,10 @@ Customizable Simulator dashboards and telemetry data logger
 
 ## Features
 - cli mode
-- nuklear ui
 - web ui
-- framebuffer ui
 - ncurses ui
-- records telemetry sampled 4 times a second to database
+- customizable embedded UI
+- records telemetry sampled 4 times a second to database, with data channels for steering, brake, acceleration, speed, and rpms
 
 [![gilles1.png](https://i.postimg.cc/JhgrQB8c/gilles1.png)](https://postimg.cc/ns4fFrCC)
 (ncurses interface ```simonitor play -u curses```)
@@ -18,7 +17,7 @@ Customizable Simulator dashboards and telemetry data logger
 
 ## Suported Games
   - Using [SimSHMBridge](https://github.com/spacefreak18/simshmbridge)
-    - Asseto Corsa
+    - Asseto Corsa (requires CrewChief plugin for best results)
     - Assetto Corsa Competizione
     - Project Cars 2
     - Automobilista 2
@@ -27,31 +26,31 @@ Customizable Simulator dashboards and telemetry data logger
     - Euro Truck Simuator 2
     - American Truck Simulator
 
+  - Using [rf2SharedMemoryMapPlugin_Wine](https://github.com/schlegp/rF2SharedMemoryMapPlugin_Wine)
+
 ## Dependencies
 - argtable2
 - libconfig
 - ncurses
 - microhttpd
 - libxdg
-- uv
+- libuv (as a submodule)
 - hoel
-- jansson
-- GL
-- GLU
-- GLEW
-- glfw
-- freetype
+- lvgl (for configurable embedded displays, as a submodule)
+- sdl2 (and sdl2_image, required by lvgl)
+- tar
+- postgresql, mariadb, sqlite3 (required to link to libhoel)
 -- the rest are git submodules
 - [Nuklear](https://github.com/Immediate-Mode-UI/Nuklear)
-- [fbgfx](https://github.com/spacefreak18/fbgfx)
 - [ctemplate](https://github.com/spacefreak18/ctemplate)
+- [lvgl](https://github.com/spacefreak18/lvgl)
 - [slog](https://github.com/kala13x/slog)
 - [simshmbridge](https://github.com/spacefreak18/simshmbridge)
 - [simapi](https://github.com/spacefreak18/simapi)
 
 Arch Linux Dependencies
 ```
-pacman -Syu libxdg-basedir argtable libconfig ncurses libmicrohttpd libuv hoel sdl2 sdl2_image libtar postgresql mariadb sqlite3
+pacman -Syu libxdg-basedir argtable libconfig ncurses libmicrohttpd libuv hoel sdl2 sdl2_image libtar postgresql mariadb-libs sqlite3
 ```
 
 ## Building
@@ -109,9 +108,6 @@ simmonitor play -u cli -m
 simmonitor browse
 ```
 Currently the browser is only in ncurses.
-
-## Compatibility
-So far this is only tested with Assetto Corsa. For best results, it requires the CrewChief plugin. And for telemetry, the CrewChief plugin is a must.
 
 ## Testing
 

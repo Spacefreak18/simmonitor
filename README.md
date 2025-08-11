@@ -27,6 +27,8 @@ Customizable Simulator dashboards and telemetry data logger
     - American Truck Simulator
 
   - Using [rf2SharedMemoryMapPlugin_Wine](https://github.com/schlegp/rF2SharedMemoryMapPlugin_Wine)
+    - RFactor2
+    - LeMans Ultimate
 
 ## Dependencies
 - argtable2

@@ -234,7 +234,29 @@ int main(int argc, char** argv)
 
     if (sms->program_action == A_PLAY)
     {
-        slogd("simmonitor will display with ui type %i and config file %s", sms->ui_type, sms->uiconfig_str);
+
+        switch (sms->ui_type)
+        {
+            case (SIMMONITOR_X):
+            case (SIMMONITOR_FB):
+            case (SIMMONITOR_SDL):
+            case (SIMMONITOR_DRM):
+            case (SIMMONITOR_WEB):
+                if(does_file_exist(sms->uiconfig_str))
+                {
+                    slogd("simmonitor will display with ui type %i and config file %s", sms->ui_type, sms->uiconfig_str);
+                }
+                else
+                {
+                    slogd("simmonitor will exit due to a missing config file at %s for ui type %i", sms->uiconfig_str, sms->ui_type);
+                    goto cleanup_final;
+                }
+                break;
+            default:
+                slogd("simmonitor will display with ui type %i, config file unnecessary", sms->ui_type);
+                break;
+        }
+
 
         if(sms->monitor == true)
         {

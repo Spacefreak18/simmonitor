@@ -53,7 +53,7 @@ struct MHD_Daemon* d;
 
 void shmdatamapcallback(uv_timer_t* handle);
 void datacheckcallback(uv_timer_t* handle);
-void startui(UIType ui, SMSettings* sms, loop_data* l);
+void startui(UIType ui, SMSettings* sms, loop_data* l, SimData* simdata);
 void startdatalogger(SMSettings* sms, loop_data* l);
 void stopui(UIType ui, loop_data* l);
 void stopdatalogger(SMSettings* sms, loop_data* l);
@@ -75,41 +75,10 @@ void simapilib_logtrace(char* message)
 
 void loopstart(SMSettings* sms, loop_data* f, SimData* simdata)
 {
-    switch (sms->ui_type)
-    {
-        case (SIMMONITOR_X):
-        case (SIMMONITOR_FB):
-        case (SIMMONITOR_SDL):
-        case (SIMMONITOR_DRM):
-            slogi("looking for ui config %s", sms->uiconfig_str);
-            int confignum = getuiconfigtouse(sms->uiconfig_str, simdata->car, f->sim);
-
-            int fonts = 0;
-            int widgets = 0;
-            uiconfigcheck(sms->uiconfig_str, confignum, &fonts, &widgets);
-            slogd("loading confignum %i, with %i widgets, and %i fonts.", confignum, widgets, fonts);
-            f->numfonts = fonts;
-            f->numwidgets = widgets;
-
-            FontInfo* fi = calloc(sizeof(FontInfo), fonts);
-            SimUIWidget* simuiwidgets = calloc(sizeof(SimUIWidget), widgets);
-            lv_obj_t** simlvobjs = calloc(sizeof(lv_obj_t*), 100);
-            lv_font_t** simlvfonts = calloc(sizeof(lv_font_t*), 10);
-
-            uiloadconfig(sms->uiconfig_str, confignum, fi, simuiwidgets, "/usr/share/fonts/TTF", sms);
-            f->simuiwidgets = simuiwidgets;
-            f->fi = fi;
-            f->simlvobjs = simlvobjs;
-            f->simlvfonts = simlvfonts;
-            break;
-        default:
-            break;
-    }
-
     doui = false;
     f->uion = true;
     slogd("starting ui");
-    startui(sms->ui_type, sms, f);
+    startui(sms->ui_type, sms, f, simdata);
     startdatalogger(sms, f);
     //free(f->fi);
 }
@@ -290,14 +259,21 @@ void datacheckcallback(uv_timer_t* handle)
 
 void stopui(UIType ui, loop_data* f)
 {
+    SMSettings* sms = f->sms;
     switch (ui)
     {
 
         case (SIMMONITOR_WEB):
             webuistop(d);
+            free(f->simuiwidgets);
+            if(sms->web_def_file == NULL)
+            {
+                break;
+            }
             free(f->css);
             free(f->js);
             free(f->templatefile);
+
             break;
         case (SIMMONITOR_CLI):
         case (SIMMONITOR_CURSES):
@@ -336,7 +312,7 @@ void stopdatalogger(SMSettings* sms, loop_data* f)
     }
 }
 
-void startui(UIType ui, SMSettings* sms, loop_data* f)
+void startui(UIType ui, SMSettings* sms, loop_data* f, SimData* simdata)
 {
     switch (ui)
     {
@@ -355,6 +331,28 @@ void startui(UIType ui, SMSettings* sms, loop_data* f)
         case (SIMMONITOR_SDL):
         case (SIMMONITOR_DRM):
         case (SIMMONITOR_FB):
+
+            slogi("looking for ui config %s", sms->uiconfig_str);
+            int confignum = getuiconfigtouse(sms->uiconfig_str, simdata->car, f->sim);
+
+            int fonts = 0;
+            int widgets = 0;
+            uiconfigcheck(sms->uiconfig_str, confignum, &fonts, &widgets);
+            slogd("loading confignum %i, with %i widgets, and %i fonts.", confignum, widgets, fonts);
+            f->numfonts = fonts;
+            f->numwidgets = widgets;
+
+            FontInfo* fi = calloc(sizeof(FontInfo), fonts);
+            SimUIWidget* simuiwidgets = calloc(sizeof(SimUIWidget), widgets);
+            lv_obj_t** simlvobjs = calloc(sizeof(lv_obj_t*), 100);
+            lv_font_t** simlvfonts = calloc(sizeof(lv_font_t*), 10);
+
+            uiloadconfig(sms->uiconfig_str, confignum, fi, simuiwidgets, "/usr/share/fonts/TTF", sms);
+            f->simuiwidgets = simuiwidgets;
+            f->fi = fi;
+            f->simlvobjs = simlvobjs;
+            f->simlvfonts = simlvfonts;
+
             //lvgui();
             lvclear();
             lvinit(f->simlvobjs, f->simlvfonts, f->fi, "/usr/share/fonts/TTF", f->numfonts, sms);
@@ -362,6 +360,19 @@ void startui(UIType ui, SMSettings* sms, loop_data* f)
             uv_timer_start(&lvtimer, lvcallback, 0, 16);
             break;
         case (SIMMONITOR_WEB):
+
+            slogi("looking for ui config %s", sms->uiconfig_str);
+            int webconfignum = getuiconfigtouse(sms->uiconfig_str, simdata->car, f->sim);
+
+            uiconfigcheck(sms->uiconfig_str, webconfignum, &fonts, &widgets);
+            slogd("loading confignum %i, with %i widgets, and %i fonts.", webconfignum, widgets, fonts);
+            f->numfonts = fonts;
+            f->numwidgets = widgets;
+
+            SimUIWidget* webuiwidgets = calloc(sizeof(SimUIWidget), widgets);
+
+            uiloadconfig(sms->uiconfig_str, confignum, fi, webuiwidgets, "/usr/share/fonts/TTF", sms);
+            f->simuiwidgets = webuiwidgets;
 
             if(sms->web_def_file == NULL)
             {

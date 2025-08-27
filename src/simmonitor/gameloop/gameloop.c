@@ -75,26 +75,37 @@ void simapilib_logtrace(char* message)
 
 void loopstart(SMSettings* sms, loop_data* f, SimData* simdata)
 {
-    slogi("looking for ui config %s", sms->uiconfig_str);
-    int confignum = getuiconfigtouse(sms->uiconfig_str, simdata->car, f->sim);
+    switch (sms->ui_type)
+    {
+        case (SIMMONITOR_X):
+        case (SIMMONITOR_FB):
+        case (SIMMONITOR_SDL):
+        case (SIMMONITOR_DRM):
+            slogi("looking for ui config %s", sms->uiconfig_str);
+            int confignum = getuiconfigtouse(sms->uiconfig_str, simdata->car, f->sim);
 
-    int fonts = 0;
-    int widgets = 0;
-    uiconfigcheck(sms->uiconfig_str, confignum, &fonts, &widgets);
-    slogd("loading confignum %i, with %i widgets, and %i fonts.", confignum, widgets, fonts);
-    f->numfonts = fonts;
-    f->numwidgets = widgets;
+            int fonts = 0;
+            int widgets = 0;
+            uiconfigcheck(sms->uiconfig_str, confignum, &fonts, &widgets);
+            slogd("loading confignum %i, with %i widgets, and %i fonts.", confignum, widgets, fonts);
+            f->numfonts = fonts;
+            f->numwidgets = widgets;
 
-    FontInfo* fi = calloc(sizeof(FontInfo), fonts);
-    SimUIWidget* simuiwidgets = calloc(sizeof(SimUIWidget), widgets);
-    lv_obj_t** simlvobjs = calloc(sizeof(lv_obj_t*), 100);
-    lv_font_t** simlvfonts = calloc(sizeof(lv_font_t*), 10);
+            FontInfo* fi = calloc(sizeof(FontInfo), fonts);
+            SimUIWidget* simuiwidgets = calloc(sizeof(SimUIWidget), widgets);
+            lv_obj_t** simlvobjs = calloc(sizeof(lv_obj_t*), 100);
+            lv_font_t** simlvfonts = calloc(sizeof(lv_font_t*), 10);
 
-    uiloadconfig(sms->uiconfig_str, confignum, fi, simuiwidgets, "/usr/share/fonts/TTF", sms);
-    f->simuiwidgets = simuiwidgets;
-    f->fi = fi;
-    f->simlvobjs = simlvobjs;
-    f->simlvfonts = simlvfonts;
+            uiloadconfig(sms->uiconfig_str, confignum, fi, simuiwidgets, "/usr/share/fonts/TTF", sms);
+            f->simuiwidgets = simuiwidgets;
+            f->fi = fi;
+            f->simlvobjs = simlvobjs;
+            f->simlvfonts = simlvfonts;
+            break;
+        default:
+            break;
+    }
+
     doui = false;
     f->uion = true;
     slogd("starting ui");
@@ -295,17 +306,16 @@ void stopui(UIType ui, loop_data* f)
         case (SIMMONITOR_FB):
         case (SIMMONITOR_SDL):
         case (SIMMONITOR_DRM):
-            //sleep(1);
-            //lvclear();
+            free(f->fi);
+            free(f->simlvobjs);
+            free(f->simlvfonts);
+            free(f->simuiwidgets);
             break;
         default:
             break;
     }
 
-    free(f->fi);
-    free(f->simlvobjs);
-    free(f->simlvfonts);
-    free(f->simuiwidgets);
+
 }
 
 void startdatalogger(SMSettings* sms, loop_data* f)

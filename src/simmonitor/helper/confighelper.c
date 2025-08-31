@@ -417,7 +417,7 @@ int uiloadconfig(const char* config_file_str, int confignum, FontInfo* fi, SimUI
     }
     else
     {
-        slogi("Parsing config file");
+        slogi("Parsing ui config file, confignum %i", confignum);
 
         config_setting_t* config = NULL;
         config = config_lookup(&cfg, "configs");

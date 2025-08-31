@@ -371,7 +371,7 @@ void startui(UIType ui, SMSettings* sms, loop_data* f, SimData* simdata)
 
             SimUIWidget* webuiwidgets = calloc(sizeof(SimUIWidget), widgets);
 
-            uiloadconfig(sms->uiconfig_str, confignum, fi, webuiwidgets, "/usr/share/fonts/TTF", sms);
+            uiloadconfig(sms->uiconfig_str, webconfignum, fi, webuiwidgets, "/usr/share/fonts/TTF", sms);
             f->simuiwidgets = webuiwidgets;
 
             if(sms->web_def_file == NULL)

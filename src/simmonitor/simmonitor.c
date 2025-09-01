@@ -165,10 +165,9 @@ int main(int argc, char** argv)
     Parameters* p = malloc(sizeof(Parameters));
     SMSettings* sms = malloc(sizeof(SMSettings));;
     ConfigError ppe = getParameters(argc, argv, p);
-    if (ppe == E_SUCCESS_AND_EXIT)
+    if (ppe == E_SUCCESS_AND_EXIT || ppe == E_SOMETHING_BAD)
     {
-        freeparams(p);
-        free(p);
+        printf("invalid parameters\n");
         goto cleanup_final;
     }
 
@@ -275,7 +274,6 @@ int main(int argc, char** argv)
 
 
 cleanup_final:
-
 
     freeparams(p);
     free(p);

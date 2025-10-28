@@ -457,12 +457,16 @@ void cb(uv_poll_t* handle, int status, int events)
         SimMap* simmap = f->simmap;
         if(ch == 'a')
         {
-            fprintf(stdout, "speedx: %i speedy: %i speedz: %i\n", simdata->Xvelocity, simdata->Yvelocity, simdata->Zvelocity);
+            fprintf(stdout, "(local) speedx: %f speedy: %f speedz: %f\n", simdata->Xvelocity, simdata->Yvelocity, simdata->Zvelocity);
+            fprintf(stdout, "(world) speedx: %f speedy: %f speedz: %f\n", simdata->worldXvelocity, simdata->worldYvelocity, simdata->worldZvelocity);
+            fprintf(stdout, "(world) xpos: %f ypos: %f zpos: %f\n", simdata->worldposx, simdata->worldposy, simdata->worldposz);
+            fprintf(stdout, "(car0) x: %f y: %f z: %f\n", simdata->cars[0].xpos, simdata->cars[0].ypos, simdata->cars[0].zpos);
+            fprintf(stdout, "(car1) x: %f y: %f z: %f\n", simdata->cars[1].xpos, simdata->cars[1].ypos, simdata->cars[1].zpos);
             fflush(stdout);
         }
         if(ch == 'c')
         {
-            fprintf(stdout, "speed: %i rpms: %i gear: %i\n", simdata->velocity, simdata->rpms, simdata->gear);
+            fprintf(stdout, "speed: %i rpms: %i gear: %i boost: %f\n", simdata->velocity, simdata->rpms, simdata->gear, simdata->turboboost);
             fflush(stdout);
         }
         if(ch == 's')
@@ -491,7 +495,7 @@ void cb(uv_poll_t* handle, int status, int events)
         }
         if(ch == 't')
         {
-            fprintf(stdout, "rps: %f\n", simdata->tyreRPS[0]);
+            fprintf(stdout, "rps: %f frontdiameter: %f reardiameter: %f\n", simdata->tyreRPS[0], simdata->tyrediameter[0], simdata->tyrediameter[2]);
             fflush(stdout);
         }
     }

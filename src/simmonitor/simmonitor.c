@@ -207,6 +207,7 @@ int main(int argc, char** argv)
     SetSettingsFromParameters(p, sms, configdir_str, cachedir_str, datadir_str);
 
 
+    slog_init("simmonitor", SLOG_FLAGS_ALL, 1);
     slog_config_t slgCfg;
     slog_config_get(&slgCfg);
     slgCfg.eColorFormat = SLOG_COLORING_TAG;
@@ -271,7 +272,7 @@ int main(int argc, char** argv)
         loaddbconfig(sms->dbconfig_str, sms);
         browseloop(sms, sms->datadir_str, sms->cachedir_str);
     }
-
+    slog_destroy();
 
 cleanup_final:
 

@@ -314,6 +314,8 @@ void stopdatalogger(SMSettings* sms, loop_data* f)
 
 void startui(UIType ui, SMSettings* sms, loop_data* f, SimData* simdata)
 {
+    FontInfo* fi;
+
     switch (ui)
     {
         case (SIMMONITOR_CLI):
@@ -342,7 +344,7 @@ void startui(UIType ui, SMSettings* sms, loop_data* f, SimData* simdata)
             f->numfonts = fonts;
             f->numwidgets = widgets;
 
-            FontInfo* fi = calloc(sizeof(FontInfo), fonts);
+            fi = calloc(sizeof(FontInfo), fonts);
             SimUIWidget* simuiwidgets = calloc(sizeof(SimUIWidget), widgets);
             lv_obj_t** simlvobjs = calloc(sizeof(lv_obj_t*), 100);
             lv_font_t** simlvfonts = calloc(sizeof(lv_font_t*), 10);
@@ -368,7 +370,7 @@ void startui(UIType ui, SMSettings* sms, loop_data* f, SimData* simdata)
             slogd("loading confignum %i, with %i widgets, and %i fonts.", webconfignum, widgets, fonts);
             f->numfonts = fonts;
             f->numwidgets = widgets;
-
+            fi = calloc(sizeof(FontInfo), fonts);
             SimUIWidget* webuiwidgets = calloc(sizeof(SimUIWidget), widgets);
 
             uiloadconfig(sms->uiconfig_str, webconfignum, fi, webuiwidgets, "/usr/share/fonts/TTF", sms);

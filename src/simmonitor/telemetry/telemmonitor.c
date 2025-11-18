@@ -134,8 +134,8 @@ void telemetryinit(SimData* SimData, SimMap* simmap, SMSettings* sms)
     tick = 0;
 
 
-    //track_samples = SimData->trackspline * TRACK_SAMPLE_RATE;
-    track_samples = SimData->tracksamples;
+    track_samples = SimData->trackspline * TRACK_SAMPLE_RATE;
+    //track_samples = SimData->tracksamples;
     slogt("track samples %i", track_samples);
 
     stintlaps = 1;

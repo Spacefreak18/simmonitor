@@ -161,8 +161,8 @@ void telemetrycallback(uv_timer_t* handle)
     loop_data* f = (loop_data*) b;
     SimData* SimData = f->simdata;
     SimMap* simmap = f->simmap;
-    int pos = (int) track_samples * SimData->playerspline;
-    slogt("tick %i pos %f normpos %i of samples %i", tick, SimData->playerspline, pos, track_samples);
+    int pos = (int) track_samples * (SimData->playertrackpos / SimData->trackspline);
+    slogt("tick %i pos %f normpos %i of samples %i", tick, SimData->playertrackpos, pos, track_samples);
 
     steerdata[pos] = SimData->steer;
     acceldata[pos] = SimData->gas;

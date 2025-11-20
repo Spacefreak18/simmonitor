@@ -26,6 +26,8 @@ function simScript() {
 
     behindDrivers.length = 3;
     aheadDrivers.length = 3;
+    behindDrivers.reverse();
+    aheadDrivers.reverse();
 
     const tbody = document.getElementById('driverTable').getElementsByTagName('tbody')[0];
 

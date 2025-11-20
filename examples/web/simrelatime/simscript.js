@@ -31,13 +31,20 @@ function simScript() {
 
     // Clear any existing rows in the table body
     tbody.innerHTML = '';
-    /** drivers behind **/
-    behindDrivers.forEach(driver => {
+
+    /** drivers ahead **/
+    aheadDrivers.forEach(driver => {
+
         /** calculate gap **/
-        let distance = playerPos - driver.pos;
-        if (driver.pos > playerPos) {
-            distance = playerPos + (jsonData.track.ticks - driver.pos);
+        let distance = driver.pos - playerPos;
+
+        if (driver.pos < playerPos) {
+            distance = driver.pos + (jsonData.track.ticks - playerPos);
         }
+        if (driver.pos < playerPos && driver.lap > playerLap) {
+            distance = driver.pos + (jsonData.track.ticks - playerPos);
+        }
+
         let truedistance = distance * (jsonData.track.distance / jsonData.track.ticks);
 
         let gap = 0;
@@ -45,24 +52,24 @@ function simScript() {
         {
             gap = truedistance / playerSpeed;
         }
-        
+
         /** add row **/
-        const row = document.createElement('tr');   
-        
+        const row = document.createElement('tr');
+
         const driverCell = document.createElement('td');
         driverCell.textContent = driver.driver;
         row.appendChild(driverCell);
-        
+
         /** for debugging
         const posCell = document.createElement('td');
         posCell.textContent = driver.pos;
         row.appendChild(posCell);
         **/
-        
-        const gapCell = document.createElement('td'); 
+
+        const gapCell = document.createElement('td');
         gapCell.textContent = gap.toFixed(2);
         row.appendChild(gapCell);
-        
+
         tbody.appendChild(row);
     });
     
@@ -84,20 +91,14 @@ function simScript() {
     row.appendChild(gapCell);
    
     tbody.appendChild(row);
-    
-    /** drivers ahead **/
-    aheadDrivers.forEach(driver => {
 
+    /** drivers behind **/
+    behindDrivers.forEach(driver => {
         /** calculate gap **/
-        let distance = driver.pos - playerPos;
-
-        if (driver.pos < playerPos) {
-            distance = driver.pos + (jsonData.track.ticks - playerPos);
+        let distance = playerPos - driver.pos;
+        if (driver.pos > playerPos) {
+            distance = playerPos + (jsonData.track.ticks - driver.pos);
         }
-        if (driver.pos < playerPos && driver.lap > playerLap) {
-            distance = driver.pos + (jsonData.track.ticks - playerPos);
-        }
-
         let truedistance = distance * (jsonData.track.distance / jsonData.track.ticks);
 
         let gap = 0;
@@ -105,25 +106,24 @@ function simScript() {
         {
             gap = truedistance / playerSpeed;
         }
-        
+
         /** add row **/
         const row = document.createElement('tr');
-        
+
         const driverCell = document.createElement('td');
         driverCell.textContent = driver.driver;
         row.appendChild(driverCell);
-        
+
         /** for debugging
         const posCell = document.createElement('td');
         posCell.textContent = driver.pos;
         row.appendChild(posCell);
         **/
-        
+
         const gapCell = document.createElement('td');
         gapCell.textContent = gap.toFixed(2);
-        row.appendChild(gapCell);        
+        row.appendChild(gapCell);
 
         tbody.appendChild(row);
     });
 }
-

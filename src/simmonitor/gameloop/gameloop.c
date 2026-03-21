@@ -106,7 +106,7 @@ static void on_udp_recv(uv_udp_t* handle, ssize_t nread, const uv_buf_t* rcvbuf,
 
     if (appstate == 2)
     {
-        simdatamap(simdata, simmap, NULL, f->mapapi, false, NULL);
+        simapi_datamap(simdata, simmap, f->mapapi, false, NULL);
     }
 
     if (f->simstate == false || simdata->simstatus <= 1 || appstate <= 1)
@@ -160,7 +160,7 @@ void shmdatamapcallback(uv_timer_t* handle)
     //appstate = 2;
     if (appstate == 2)
     {
-        simdatamap(simdata, simmap, NULL, f->mapapi, false, NULL);
+        simapi_datamap(simdata, simmap, f->mapapi, false, NULL);
         if (doui == true)
         {
             loopstart(sms, f, simdata);
@@ -197,7 +197,7 @@ void udpstart(SMSettings* sms, loop_data* f, SimData* simdata, SimMap* simmap)
 {
     if (appstate == 2)
     {
-        simdatamap(simdata, simmap, NULL, f->mapapi, true, NULL);
+        simapi_datamap(simdata, simmap, f->mapapi, true, NULL);
         if (doui == true)
         {
             loopstart(sms, f, simdata);
@@ -214,7 +214,7 @@ void datacheckcallback(uv_timer_t* handle)
 
     if ( appstate == 1 )
     {
-        SimInfo si = getSim(simdata, simmap, f->sms->force_udp_mode, startudp, false);
+        SimInfo si = simapi_get_sim(simdata, simmap, f->sms->force_udp_mode, startudp, false);
         //TODO: move all this to a siminfo struct in loop_data
         f->simstate = si.isSimOn;
         f->sim = si.simulatorapi;
@@ -517,7 +517,7 @@ int mainloop(SMSettings* sms)
 {
 
     SimData* simdata = malloc(sizeof(SimData));
-    SimMap* simmap = createSimMap();
+    SimMap* simmap = simapi_simmap_create();
 
     if(sms->ui_type == SIMMONITOR_X || sms->ui_type == SIMMONITOR_FB || sms->ui_type == SIMMONITOR_SDL || sms->ui_type == SIMMONITOR_DRM)
     {
@@ -560,9 +560,9 @@ int mainloop(SMSettings* sms)
     sleep(5);
     uv_timer_start(&datachecktimer, datacheckcallback, 1000, 1000);
 
-    set_simapi_log_info(simapilib_loginfo);
-    set_simapi_log_debug(simapilib_logdebug);
-    set_simapi_log_trace(simapilib_logtrace);
+    simapi_set_log_info(simapilib_loginfo);
+    simapi_set_log_debug(simapilib_logdebug);
+    simapi_set_log_trace(simapilib_logtrace);
 
     if (0 != uv_poll_init(uv_default_loop(), poll, 0))
     {
@@ -595,7 +595,7 @@ int mainloop(SMSettings* sms)
 
     free(baton);
     free(simdata);
-    freesimmap(simmap, false);
+    free(simmap);
 
     return 0;
 }

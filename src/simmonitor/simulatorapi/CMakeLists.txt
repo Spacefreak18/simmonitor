@@ -1,5 +1,4 @@
 set(simulatorapi_source_files
-  simapi/simapi/simdata.h
   simapi/simapi/simmapper.c
   simapi/simapi/simmapper.h
   simapi/simapi/simdata.h
@@ -7,6 +6,14 @@ set(simulatorapi_source_files
   simapi/include/acdata.h
   simapi/include/rf2data.h
   simapi/include/pcars2data.h
+  simapi/include/dirt2data.h
+  simapi/include/scs2data.h
+  simapi/include/outgauge.h
+  simapi/include/f12018.h
+  simapi/include/rbrdata.h
+  simapi/include/r3e.h
+  simapi/include/wreckfest2data.h
+  simapi/include/forza.h
   simapi/simmap/basicmap.h
   simapi/simmap/mapacdata.c
   simapi/simmap/mapacdata.h
@@ -14,13 +21,24 @@ set(simulatorapi_source_files
   simapi/simapi/rf2.h
   simapi/simapi/dirt2.h
   simapi/simapi/pcars2.h
+  simapi/simapi/scs2.h
   simapi/simapi/outgauge.h
+  simapi/simapi/wreckfest2.h
+  simapi/simapi/f1.h
+  simapi/simapi/rbr.h
+  simapi/simapi/forzadef.h
+  simapi/simapi/r3edef.h
   simapi/simapi/mapping/acmapper.c
   simapi/simapi/mapping/rf2mapper.c
+  simapi/simapi/mapping/r3emapper.c
   simapi/simapi/mapping/pcars2mapper.c
   simapi/simapi/mapping/dirt2mapper.c
   simapi/simapi/mapping/scs2mapper.c
   simapi/simapi/mapping/outgaugemapper.c
+  simapi/simapi/mapping/f12018mapper.c
+  simapi/simapi/mapping/rbrmapper.c
+  simapi/simapi/mapping/wreckfest2mapper.c
+  simapi/simapi/mapping/forzamapper.c
   simapi/simapi/getpid.c
   simapi/simapi/getpid.h
 )

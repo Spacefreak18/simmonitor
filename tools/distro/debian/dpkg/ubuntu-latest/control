@@ -5,4 +5,4 @@ Priority: optional
 Architecture: amd64
 Maintainer: Paul Jones <paul@spacefreak18.xyz>
 Description: Racing Simulator Dashboard Application
-Depends: libsdl2-image-2.0-0,libhoel1.4,libmicrohttpd12,libsdl2-2.0-0,lib64ncursesw6,tar,libpulse0,libconfig11,libargtable2-0,liblua5.4-0,libuv1t64,libserialport0,libxml2,libxdg-basedir1,libhidapi-hidraw0
+Depends: libsdl2-image-2.0-0,libhoel1.4,libmicrohttpd12,libsdl2-2.0-0,lib64ncursesw6,libtar0,libpulse0,libconfig11,libargtable2-0,liblua5.4-0,libuv1t64,libserialport0,libxml2,libxdg-basedir1,libhidapi-hidraw0

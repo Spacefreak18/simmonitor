@@ -15,6 +15,22 @@ set(CMAKE_POLICY_VERSION_MINIMUM 3.5)
 project(simmonitor)
 set(CMAKE_EXE_LINKER_FLAGS "-Wl,--no-as-needed -ldl")
 
+find_package(PkgConfig REQUIRED)
+pkg_check_modules(LIBPROCPS libprocps)
+pkg_check_modules(LIBPROC2 libproc2)
+
+if (LIBPROCPS_FOUND)
+    #add_compile_definitions(USE_OLD_PID_VAL=0)
+elseif (LIBPROC2_FOUND)
+    if (LIBPROC2_VERSION VERSION_GREATER_EQUAL "4.0.5")
+        #add_compile_definitions(USE_OLD_PID_VAL=0)
+    else()
+        add_compile_definitions(USE_OLD_PID_VAL)
+    endif()
+else()
+    add_compile_definitions(USE_OLD_PID_VAL)
+endif()
+
 add_subdirectory(src/simmonitor/gameloop)
 add_subdirectory(src/simmonitor/simulatorapi)
 add_subdirectory(src/simmonitor/helper)
@@ -26,7 +42,7 @@ add_subdirectory(src/simmonitor/telemetry)
 
 add_executable(simmonitor src/simmonitor/simmonitor.c)
 target_include_directories(simmonitor PUBLIC config)
-target_link_libraries(simmonitor xdg-basedir m ncursesw argtable2 config gameloop helper slog simulatorapi db ui telemetry uv hoel jansson microhttpd tar)
+target_link_libraries(simmonitor xdg-basedir m ncursesw argtable2 config gameloop helper slog simulatorapi db ui telemetry uv hoel jansson microhttpd tar proc2)
 add_compile_definitions(simmonitor SIMMAP_ALL)
 
 # used for enabling additional compiler options if supported

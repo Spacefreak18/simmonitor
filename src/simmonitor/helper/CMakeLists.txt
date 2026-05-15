@@ -5,8 +5,8 @@ set(helper_source_files
   dirhelper.h
   confighelper.c
   confighelper.h
-  iohelper.c
-  iohelper.h
+  #iohelper.c
+  #iohelper.h
 )
 
 add_library(helper STATIC ${helper_source_files})

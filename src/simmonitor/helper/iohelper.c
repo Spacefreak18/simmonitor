@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <libtar.h>
+#include <tar.h>
 #include <sys/stat.h>
 #include <unistd.h>
 

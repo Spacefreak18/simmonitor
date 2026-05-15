@@ -394,7 +394,7 @@ void startui(UIType ui, SMSettings* sms, loop_data* f, SimData* simdata)
             create_dir(rundir2);
             free(path2);
             slogi("Using rundir %s extracting tarball %s", rundir2, sms->web_def_file);
-            extract_tarball(sms->web_def_file, rundir2);
+            //extract_tarball(sms->web_def_file, rundir2);
             char* cssfilepath;
             asprintf(&cssfilepath, "%s%s", rundir2, "simstyle.css");
             FILE* fb = fopen(cssfilepath, "r");

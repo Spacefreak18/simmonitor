@@ -99,7 +99,7 @@ int getsessions(struct _h_connection* conn, const char* sessionname, SessionDbo*
     int errcode = h_query_select(conn, query, &result);
     if (errcode == H_OK)
     {
-        sess->rows = malloc(sizeof(SessionRowData) * result.nb_rows);
+        sess->rows = calloc(result.nb_rows, sizeof(SessionRowData));
         get_row_results(result, sess->fields, sess->rows, sizeof(SessionRowData));
         h_clean_result(&result);
     }
@@ -118,16 +118,16 @@ int getstints(struct _h_connection* conn, const char* sessionname, StintDbo* sti
 {
     struct _h_result result;
     struct _h_data* data;
-    char* query = malloc(150 * sizeof(char));
+    char* query;
     slogt("Performing query stints");
 
 
-    sprintf(query, "select stint_id, driver_id, team_member_id, session_id, car_id, game_car_id, laps, valid_laps, best_lap_id FROM %s WHERE session_id=%i", "Stints", use_id);
+    asprintf(&query, "select stint_id, driver_id, team_member_id, session_id, car_id, game_car_id, laps, valid_laps, best_lap_id FROM %s WHERE session_id=%i", "Stints", use_id);
     slogt("execute query %s", query);
     int errcode = h_query_select(conn, query, &result);
     if (errcode == H_OK)
     {
-        stint->rows = malloc(sizeof(StintRowData) * result.nb_rows);
+        stint->rows = calloc(result.nb_rows, sizeof(StintRowData));
         get_row_results(result, stint->fields, stint->rows, sizeof(StintRowData));
         h_clean_result(&result);
     }
@@ -146,14 +146,14 @@ int getlaps(struct _h_connection* conn, const char* sessionname, LapDbo* laps, i
 {
     struct _h_result result;
     struct _h_data* data;
-    char* query = malloc(250 * sizeof(char));
+    char* query;
     slogt("Performing query laps");
 
-    sprintf(query, "select lap_id, stint_id, sector_1, sector_2, sector_3, grip, tyre, time, cuts, crashes, max_speed, avg_speed, finished_at FROM %s WHERE %s=%i", "Laps", "stint_id", use_id);
+    asprintf(&query, "select lap_id, stint_id, sector_1, sector_2, sector_3, grip, tyre, time, cuts, crashes, max_speed, avg_speed, finished_at FROM %s WHERE %s=%i", "Laps", "stint_id", use_id);
     int errcode = h_query_select(conn, query, &result);
     if (errcode == H_OK)
     {
-        laps->rows = malloc(sizeof(LapRowData) * result.nb_rows);
+        laps->rows = calloc(result.nb_rows, sizeof(LapRowData));
         get_row_results(result, laps->fields, laps->rows, sizeof(LapRowData));
         h_clean_result(&result);
     }

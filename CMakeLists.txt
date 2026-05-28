@@ -42,7 +42,7 @@ add_subdirectory(src/simmonitor/telemetry)
 
 add_executable(simmonitor src/simmonitor/simmonitor.c)
 target_include_directories(simmonitor PUBLIC config)
-target_link_libraries(simmonitor xdg-basedir m ncursesw argtable2 config gameloop helper slog simulatorapi db ui telemetry uv hoel jansson microhttpd proc2)
+target_link_libraries(simmonitor xdg-basedir m ncursesw argtable2 config gameloop helper slog simulatorapi db ui telemetry uv hoel jansson microhttpd proc2 archive)
 add_compile_definitions(simmonitor SIMMAP_ALL)
 
 # used for enabling additional compiler options if supported

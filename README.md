@@ -40,7 +40,7 @@ Customizable Simulator dashboards and telemetry data logger
 - hoel
 - lvgl (for configurable embedded displays, as a submodule)
 - sdl2 (and sdl2_image, required by lvgl)
-- tar
+- libarchive
 - postgresql, mariadb, sqlite3 (required to link to libhoel)
 -- the rest are git submodules
 - [Nuklear](https://github.com/Immediate-Mode-UI/Nuklear)
@@ -52,7 +52,7 @@ Customizable Simulator dashboards and telemetry data logger
 
 Arch Linux Dependencies
 ```
-pacman -Syu libxdg-basedir argtable libconfig ncurses libmicrohttpd libuv hoel sdl2 sdl2_image libtar postgresql mariadb-libs sqlite3
+pacman -Syu libxdg-basedir argtable libconfig ncurses libmicrohttpd libuv hoel sdl2 sdl2_image libarchive postgresql mariadb-libs sqlite3
 ```
 
 ## Building

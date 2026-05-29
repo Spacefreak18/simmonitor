@@ -1,4 +1,4 @@
-#dnf install argtable-devel libconfig-devel libuv-devel libxdg-basedir-devel procps-ng-devel sdl2-compat-devel libarchive-devel ncurses-devel libmicrohttpd-devel hoel-devel
+#dnf install argtable-devel libconfig-devel libuv-devel libxdg-basedir-devel procps-ng-devel sdl2-compat-devel SDL2_image-devel libarchive-devel ncurses-devel libmicrohttpd-devel hoel-devel libdrm-devel
 Summary: A dashboard and telemetry manager for racing sims
 Name: simmonitor
 Version: 0.0.5
@@ -10,7 +10,7 @@ URL: https://spacefreak18.github.io/simapi
 Distribution: Fedora Linux
 Vendor: spacefreak18
 Packager: Paul Jones <paul@spacefreak18.xyz>
-Requires: argtable libconfig libuv libxdg-basedir procps-ng sdl2-compat libarchive ncurses libmicrohttpd libhoel
+Requires: argtable libconfig libuv libxdg-basedir procps-ng sdl2-compat SDL2_image libarchive ncurses libmicrohttpd libhoel libdrm
 
 %description
 A dashboard and telemetry manager for Racing sims

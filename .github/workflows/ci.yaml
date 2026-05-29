@@ -8,7 +8,7 @@ jobs:
   build-simmonitor-debs:
     strategy:
       matrix:
-        os: [debian-stable,ubuntu-latest]
+        os: [debian-stable, debian-latest,ubuntu-latest]
     runs-on: ${{ matrix.os }}
 
 

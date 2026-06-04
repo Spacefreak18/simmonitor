@@ -597,7 +597,7 @@ void* browseloop(SMSettings* sms, char* datadir, char* cachedir)
                     break;
             }
 
-            mvwaddnstr(bwin1, bwinx-3, 0, "  Press e to enter record, b to go back. 1 and 2 to select. g to graph and p to print. Vim keys also navigate.", -1);
+            mvwaddnstr(bwin1, bwinx-3, 0, "  Press e to enter record, b to go back. 1 and 2 to select. g to graph, p to print, m to export to motec.", -1);
             mvwaddnstr(bwin1, bwinx-2, 0, "  Vim keys also navigate. Press q to quit.", -1);
             action = 0;
         }
@@ -661,6 +661,18 @@ void* browseloop(SMSettings* sms, char* datadir, char* cachedir)
                 asprintf(&lapsfile, "%s%s", cachedir, "laps.out");
                 openFile(lapsfile);
                 free(lapsfile);
+            }
+        }
+        if(ch == 'm')
+        {
+            if(screen == LAPS_SCREEN)
+            {
+                dumplaptelemetrytomotecfile(conn, cachedir, selection1);
+                slogd("finished dumping data");
+                //char* lapsfile;
+                //asprintf(&lapsfile, "%s%s", cachedir, "laps.out");
+                //openFile(lapsfile);
+                //free(lapsfile);
             }
         }
         if (ch == 'g')

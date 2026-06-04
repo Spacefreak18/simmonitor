@@ -4,12 +4,15 @@
 #include <stddef.h>
 #include <stdlib.h>
 #include <string.h>
+#include <time.h>
+
 
 #include <hoel.h>
 #include <jansson.h>
 
 #include "../db/hoeldb.h"
 #include "telemetry.h"
+#include "yalp/yalp.h"
 #include "../slog/src/slog.h"
 
 int telem_result(struct _h_result result, int doublefields, int intfields, int* intarrays, double* doublearrays)
@@ -387,4 +390,221 @@ int updatetelemetrydata(struct _h_connection* conn, int tracksamples, int telemi
     b = updatetelemetry(conn, telemid, tracksamples, sizeof(int), "speed", speeddata);
 
     return b;
+}
+
+int dumplaptelemetrytomotecfile(struct _h_connection* conn, char* datadir, int lap1id)
+{
+
+    slogt("dumping telemetry to motec file: lap1id", lap1id);
+
+    int points = 0;
+    int intfields = 3;
+    int doublefields = 3;
+
+    struct _h_result result;
+    struct _h_data* data;
+    char* query = malloc(150 * sizeof(char));
+    sprintf(query, "SELECT lap_id, points FROM %s WHERE %s=%i", "telemetry", "lap_id", lap1id);
+    if (h_query_select(conn, query, &result) == H_OK)
+    {
+        //laps->rows = malloc(sizeof(LapRowData) * result.nb_rows);
+        //get_row_results(result, laps->fields, laps->rows, sizeof(LapRowData));
+        points = telem_result(result, 3, 3, NULL, NULL);
+        //get_stint_result(result, stint);
+        h_clean_result(&result);
+    }
+    else
+    {
+        printf("Error executing query\n");
+    }
+    free(query);
+
+
+    uint32_t* intarrays1 = malloc((sizeof(uint32_t))*points* intfields);
+    double* doublearrays1 = malloc((sizeof(double))*points* doublefields);
+
+    struct _h_result result1;
+    struct _h_data* data1;
+    char* query1;
+    //asprintf(&query1, "SELECT lap_id, points, speed, rpms, gear, brake, accel, steer FROM %s WHERE %s=%i", "telemetry", "lap_id", lap1id);
+    asprintf(&query1, "SELECT lap_id, points, hex(speed), hex(rpms), hex(gear), hex(brake), hex(accel), hex(steer) FROM %s WHERE %s=%i", "telemetry", "lap_id", lap1id);
+    if (h_query_select(conn, query1, &result1) == H_OK)
+    {
+        //laps->rows = malloc(sizeof(LapRowData) * result.nb_rows);
+        //get_row_results(result, laps->fields, laps->rows, sizeof(LapRowData));
+        points = telem_result(result1, intfields, doublefields, intarrays1, doublearrays1);
+        //get_stint_result(result, stint);
+        h_clean_result(&result1);
+    }
+    else
+    {
+        printf("Error executing query\n");
+    }
+    free(query1);
+
+    char* filename1 = "data.ld";
+    size_t strsize = strlen(datadir) + strlen(filename1) + 1;
+    char* datafile = malloc(strsize);
+
+    snprintf(datafile, strsize, "%s%s", datadir, filename1);
+    slogt("dumping %i samples and 6 channels to file %s", points, datafile);
+
+    FILE *fp = fopen(datafile, "wb");
+    if (!fp) {
+        perror("Failed to open file");
+        return 1;
+    }
+
+    /* ── Header ── */
+    yLDHeader header;
+    memset(&header, 0, sizeof(header));
+    header.channel_meta_ptr = 13384;
+    header.channel_data_ptr = 23056;
+    header.event_ptr        = 1762;
+    header.device_serial    = 12007;
+    strncpy(header.device_type,   "ADL",           sizeof(header.device_type)   - 1);
+    header.device_version = 420;
+    header.num_channels   = 6;
+
+    // TODO: GET THIS DATA FOR REAL
+    //strncpy(header.date_string,   "23/11/2025",    sizeof(header.date_string)   - 1);
+    //strncpy(header.time_string,   "09:53:00",      sizeof(header.time_string)   - 1);
+    time_t now = time(NULL);
+    struct tm tm_now;
+    localtime_r(&now, &tm_now);
+
+    strftime(header.date_string,
+         sizeof(header.date_string),
+         "%d/%m/%Y",
+         &tm_now);
+
+    strftime(header.time_string,
+         sizeof(header.time_string),
+         "%H:%M:%S",
+         &tm_now);
+    strncpy(header.driver,        "Driver",              sizeof(header.driver)        - 1);
+    strncpy(header.vehicleid,     "11A",           sizeof(header.vehicleid)     - 1);
+    strncpy(header.venue,         "Circuit",        sizeof(header.venue)         - 1);
+    strncpy(header.session,       "1",             sizeof(header.session)       - 1);
+    strncpy(header.short_comment, "exported from simmonitor", sizeof(header.short_comment) - 1);
+
+    yLDChannelMetadata ch0_meta;
+    memset(&ch0_meta, 0, sizeof(ch0_meta));
+    ch0_meta.datatype    = YALP_DATATYPE_I32;
+    ch0_meta.sample_rate = 4;
+    ch0_meta.offset      = 0;
+    ch0_meta.mul         = 1;
+    ch0_meta.scale       = 1;
+    ch0_meta.dec_places  = 0;
+    strncpy(ch0_meta.name,       "Car Speed", sizeof(ch0_meta.name)       - 1);
+    strncpy(ch0_meta.short_name, "Speed",        sizeof(ch0_meta.short_name) - 1);
+    strncpy(ch0_meta.unit,       "km/h",              sizeof(ch0_meta.unit)       - 1);
+
+    yLDChannelMetadata ch1_meta;
+    memset(&ch1_meta, 0, sizeof(ch1_meta));
+    ch1_meta.datatype    = YALP_DATATYPE_I32;
+    ch1_meta.sample_rate = 4;
+    ch1_meta.offset      = 0;
+    ch1_meta.mul         = 1;
+    ch1_meta.scale       = 1;
+    ch1_meta.dec_places  = 0;
+    strncpy(ch1_meta.name,       "Engine RPM", sizeof(ch1_meta.name)       - 1);
+    strncpy(ch1_meta.short_name, "rpm",      sizeof(ch1_meta.short_name) - 1);
+    strncpy(ch1_meta.unit,       "rpm",          sizeof(ch1_meta.unit)       - 1);
+
+    yLDChannelMetadata ch2_meta;
+    memset(&ch2_meta, 0, sizeof(ch2_meta));
+    ch2_meta.datatype    = YALP_DATATYPE_I32;
+    ch2_meta.sample_rate = 4;
+    ch2_meta.offset      = 0;
+    ch2_meta.mul         = 1;
+    ch2_meta.scale       = 1;
+    ch2_meta.dec_places  = 0;
+    strncpy(ch2_meta.name,       "Gear", sizeof(ch2_meta.name)       - 1);
+    strncpy(ch2_meta.short_name, "gear",      sizeof(ch2_meta.short_name) - 1);
+
+    yLDChannelMetadata ch3_meta;
+    memset(&ch3_meta, 0, sizeof(ch3_meta));
+    ch3_meta.datatype    = YALP_DATATYPE_F32;
+    ch3_meta.sample_rate = 4;
+    ch3_meta.offset      = 0;
+    ch3_meta.mul         = 1;
+    ch3_meta.scale       = 1;
+    ch3_meta.dec_places  = 0;
+    strncpy(ch3_meta.name,       "Brake Pos", sizeof(ch3_meta.name)       - 1);
+    strncpy(ch3_meta.short_name, "brake",      sizeof(ch3_meta.short_name) - 1);
+    strncpy(ch3_meta.unit,       "%",          sizeof(ch3_meta.unit)       - 1);
+
+    yLDChannelMetadata ch4_meta;
+    memset(&ch4_meta, 0, sizeof(ch4_meta));
+    ch4_meta.datatype    = YALP_DATATYPE_F32;
+    ch4_meta.sample_rate = 4;
+    ch4_meta.offset      = 0;
+    ch4_meta.mul         = 1;
+    ch4_meta.scale       = 1;
+    ch4_meta.dec_places  = 0;
+    strncpy(ch4_meta.name,       "Throttle Pos", sizeof(ch4_meta.name)       - 1);
+    strncpy(ch4_meta.short_name, "throttle",      sizeof(ch4_meta.short_name) - 1);
+    strncpy(ch4_meta.unit,       "%",          sizeof(ch4_meta.unit)       - 1);
+
+    yLDChannelMetadata ch5_meta;
+    memset(&ch5_meta, 0, sizeof(ch5_meta));
+    ch5_meta.datatype    = YALP_DATATYPE_F32;
+    ch5_meta.sample_rate = 4;
+    ch5_meta.offset      = 0;
+    ch5_meta.mul         = 1;
+    ch5_meta.scale       = 1;
+    ch5_meta.dec_places  = 0;
+    strncpy(ch5_meta.name,       "Steering Pos", sizeof(ch5_meta.name)       - 1);
+    strncpy(ch5_meta.short_name, "steer",      sizeof(ch5_meta.short_name) - 1);
+    strncpy(ch5_meta.unit,       "%",          sizeof(ch5_meta.unit)       - 1);
+
+    yLDSample ch0_samples[points];
+    yLDSample ch1_samples[points];
+    yLDSample ch2_samples[points];
+    yLDSample ch3_samples[points];
+    yLDSample ch4_samples[points];
+    yLDSample ch5_samples[points];
+
+    bool hideneutral = true;
+    int lastgear1 = 0;
+    for (int i=0; i<points; i++)
+    {
+        int gear1 = intarrays1[i+(points*2)];
+        double steer1 = doublearrays1[i+(points*2)];
+        if (hideneutral == true)
+        {
+            if( gear1 == 1)
+            {
+                gear1 = lastgear1;
+            }
+        }
+
+        ch0_samples[i] = yalp_ld_sample_i32(intarrays1[i+(points * 0)]);
+        ch1_samples[i] = yalp_ld_sample_i32(intarrays1[i+(points * 1)]);
+        ch2_samples[i] = yalp_ld_sample_i32(gear1);
+        ch3_samples[i] = yalp_ld_sample_f32(doublearrays1[i+(points * 0)]);
+        ch4_samples[i] = yalp_ld_sample_f32(doublearrays1[i+(points * 1)]);
+        ch5_samples[i] = yalp_ld_sample_f32(doublearrays1[i+(points * 2)]);
+
+        lastgear1 = gear1;
+    }
+    
+    /* ── Assemble channel array and write ── */
+    yLDChannel channels[6] = {
+        { ch0_meta, ch0_samples, points },
+        { ch1_meta, ch1_samples, points },
+        { ch2_meta, ch2_samples, points },
+        { ch3_meta, ch3_samples, points },
+        { ch4_meta, ch4_samples, points },
+        { ch5_meta, ch5_samples, points },
+    };
+
+    int rc = yalp_ld_write(fp, &header, channels, 6);
+    
+    fclose(fp);
+    free(intarrays1);
+    free(doublearrays1);
+
+    return 0;
 }

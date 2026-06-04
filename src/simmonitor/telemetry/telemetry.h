@@ -4,6 +4,7 @@
 #include "../db/hoeldb.h"
 
 int dumptelemetrytofile(struct _h_connection* conn, char* datadir, int lap1id, int lap2id);
+int dumplaptelemetrytomotecfile(struct _h_connection* conn, char* datadir, int lap1id);
 int dumplapstofile(char* datadir, SessionDbo sess, LapDbo lapsdb, int numlaps, int sessidx);
 
 void print_bytes(void* ptr, int size);

@@ -12,4 +12,4 @@
     url = http://github.com/spacefreak18/lvgl
 [submodule "src/simmonitor/telemetry/yalp"]
 	path = src/simmonitor/telemetry/yalp
-	url = git@github.com:/spacefreak18/yalp
+	url = http://github.com/spacefreak18/yalp
